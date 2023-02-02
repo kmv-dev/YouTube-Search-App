@@ -17,46 +17,77 @@
         <BaseField :placeholder="'default'"></BaseField>
       </div>
       <div class="ui-kit__box">
-        <BaseField :label="'isLabel'"></BaseField>
+        <BaseField
+          :label="'isLabel'"
+          :type="'email'"
+          :placeholder="'emeil'"
+          v-model:value="v.emailField.$model"
+          :error="v.emailField.$errors"
+        ></BaseField>
       </div>
       <div class="ui-kit__box">
         <BaseField
-          v-model="passwordValue"
           :label="'isPassword'"
           :type="passwordType"
           :placeholder="'password'"
           isPassword
           @showPassword="togglePasswordType()"
+          v-model:value="v.passwordValue.$model"
+          :error="v.passwordValue.$errors"
         ></BaseField>
       </div>
       <div class="ui-kit__box">
         <BaseField
-          v-model="searchValue"
           :placeholder="'поиск'"
           isSearchField
+          v-model:value="v.searchValue.$model"
+          :error="v.searchValue.$errors"
         ></BaseField>
       </div>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      passwordValue: "",
-      passwordType: "password",
-      searchValue: "",
-    };
-  },
-  methods: {
-    togglePasswordType() {
-      this.passwordType === "password"
-        ? (this.passwordType = "text")
-        : (this.passwordType = "password");
-    },
-  },
+<script setup>
+import { ref, computed } from "vue";
+import useVuelidate from "@vuelidate/core";
+import { helpers, minLength, numeric, email } from "@vuelidate/validators";
+
+const passwordValue = ref("");
+const passwordType = ref("password");
+const searchValue = ref("");
+const emailField = ref("");
+
+const togglePasswordType = () => {
+  passwordType.value === "password"
+    ? (passwordType.value = "text")
+    : (passwordType.value = "password");
 };
+
+const rules = computed(() => ({
+  searchValue: {
+    minLength: helpers.withMessage(
+      `Минимальная длина: 3 символа`,
+      minLength(3)
+    ),
+  },
+  passwordValue: {
+    minLength: helpers.withMessage(
+      `Минимальная длина: 3 символа`,
+      minLength(3)
+    ),
+    numeric: helpers.withMessage(`Вы можете ввести только цифры`, numeric),
+  },
+  emailField: {
+    email: helpers.withMessage("Вы ввели неверный email", email),
+  },
+}));
+
+const v = useVuelidate(rules, {
+  searchValue,
+  passwordValue,
+  emailField,
+});
 </script>
 
 <style lang="scss" scoped>

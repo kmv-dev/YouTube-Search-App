@@ -6,18 +6,17 @@
     >
     <div class="base-field__control">
       <input
-        :value="modelValue"
+        :value="value"
         class="base-field__input"
         :placeholder="placeholder"
         :readonly="isReadonly"
         :name="name"
         :type="type"
-        @input="$emit('update:modelValue', $event.target.value)"
-        @focus="test2"
+        @input="updateValue"
       />
       <div class="base-field__slot">
         <div
-          v-if="!modelValue && isSearchField"
+          v-if="!value && isSearchField"
           class="base-field__save-icon_disabled"
         ></div>
         <button>
@@ -25,13 +24,13 @@
             v-if="isPassword"
             class="ui-kit__icon"
             :class="passwordFieldIcon"
-            @click="$emit('showPassword')"
+            @click="showPassword"
           ></span>
         </button>
         <div class="base-field__save-action">
           <Transition>
             <button
-              v-if="modelValue && isSearchField"
+              v-if="value && isSearchField"
               class="base-field__save-icon"
               :class="iconSave"
               @click="getSaveData"
@@ -52,132 +51,131 @@
         </div>
       </div>
     </div>
+    <TransitionGroup>
+      <div class="base-field__error" v-for="item of error" :key="item.$uid">
+        <span class="base-field__error-message">{{ item.$message }}</span>
+      </div>
+    </TransitionGroup>
   </div>
 </template>
 
-<script>
-import vClickOutside from "click-outside-vue3";
-export default {
-  name: "BaseField",
-  directives: {
-    clickOutside: vClickOutside.directive,
+<script setup>
+import { ref, computed, watch } from "vue";
+const emit = defineEmits(["update:value", "showPassword"]);
+const props = defineProps({
+  value: {
+    type: String,
+    default: "",
   },
-  props: {
-    modelValue: {
-      type: String,
-      default: "",
-    },
-    label: {
-      type: String,
-      default: "",
-    },
-    placeholder: {
-      type: String,
-      default: "",
-    },
-    type: {
-      type: String,
-      default: "text",
-    },
-    name: {
-      type: String,
-      default: "",
-    },
-    isPassword: {
-      type: Boolean,
-      default: false,
-    },
-    isReadonly: {
-      type: Boolean,
-      default: false,
-    },
-    isTextCenter: {
-      type: Boolean,
-      default: false,
-    },
-    isSearchField: {
-      type: Boolean,
-      default: false,
-    },
-    isSearchFieldBtn: {
-      type: Boolean,
-      default: false,
-    },
-    isRequired: {
-      type: Boolean,
-      default: false,
-    },
+  label: {
+    type: String,
+    default: "",
   },
-  data() {
-    return {
-      iconSave: "icon-like",
-    };
+  placeholder: {
+    type: String,
+    default: "",
   },
-  watch: {
-    modelValue() {
-      this.isSaveRequest();
-    },
+  type: {
+    type: String,
+    default: "text",
   },
-  computed: {
-    fieldClass() {
-      const {
-        isSearchField,
-        isReadonly,
-        isPassword,
-        isTextCenter,
-        isSearchFieldBtn,
-        iconSave,
-      } = this;
-      return [
-        {
-          "base-field_is-search": isSearchField,
-          "base-field_is-readonly": isReadonly,
-          "base-field_is-password": isPassword,
-          "base-field_is-center": isTextCenter,
-          "base-field_like-position": isSearchFieldBtn,
-          "base-field_not-save-value": iconSave,
-        },
-      ];
-    },
-    passwordFieldIcon() {
-      if (this.type === "password") {
-        return "icon-eye-off";
-      } else {
-        return "icon-eye";
-      }
-    },
-    isSave() {
-      if (this.iconSave === "icon-like-active") {
-        return true;
-      } else {
-        return false;
-      }
-    },
+  name: {
+    type: String,
+    default: "",
   },
-  methods: {
-    isSaveRequest() {
-      if (!JSON.parse(localStorage.getItem(this.modelValue))) {
-        this.iconSave = "icon-like";
-      } else {
-        this.iconSave = "icon-like-active";
-      }
-    },
-    getSaveData() {
-      if (JSON.parse(localStorage.getItem(this.modelValue))) {
-        this.iconSave = "icon-like-active";
-      }
-      if (JSON.parse(localStorage.getItem(this.modelValue))) {
-        this.iconSave = "icon-like";
-        localStorage.removeItem(this.modelValue);
-      } else if (!JSON.parse(localStorage.getItem(this.modelValue))) {
-        this.iconSave = "icon-like-active";
-        localStorage.setItem(this.modelValue, JSON.stringify(this.modelValue));
-      }
-      if (!JSON.parse(localStorage.getItem(this.modelValue))) {
-        this.iconSave = "icon-like";
-      }
-    },
+  error: {
+    type: Array,
+    required: false,
   },
+  isPassword: {
+    type: Boolean,
+    default: false,
+  },
+  isReadonly: {
+    type: Boolean,
+    default: false,
+  },
+  isTextCenter: {
+    type: Boolean,
+    default: false,
+  },
+  isSearchField: {
+    type: Boolean,
+    default: false,
+  },
+  isSearchFieldBtn: {
+    type: Boolean,
+    default: false,
+  },
+  isRequired: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const iconSave = ref("icon-like");
+
+watch(
+  () => props.value,
+  () => {
+    isSaveRequest();
+  }
+);
+
+const fieldClass = computed(() => {
+  return [
+    {
+      "base-field_is-search": props.isSearchField,
+      "base-field_is-readonly": props.isReadonly,
+      "base-field_is-password": props.isPassword,
+      "base-field_is-center": props.isTextCenter,
+      "base-field_like-position": props.isSearchFieldBtn,
+      "base-field_not-save-value": iconSave.value,
+    },
+  ];
+});
+const passwordFieldIcon = computed(() => {
+  if (props.type === "password") {
+    return "icon-eye-off";
+  } else {
+    return "icon-eye";
+  }
+});
+const isSave = computed(() => {
+  if (iconSave.value === "icon-like-active") {
+    return true;
+  } else {
+    return false;
+  }
+});
+
+const isSaveRequest = () => {
+  if (!JSON.parse(localStorage.getItem(props.value))) {
+    iconSave.value = "icon-like";
+  } else {
+    iconSave.value = "icon-like-active";
+  }
+};
+const getSaveData = () => {
+  if (JSON.parse(localStorage.getItem(props.value))) {
+    iconSave.value = "icon-like-active";
+  }
+  if (JSON.parse(localStorage.getItem(props.value))) {
+    iconSave.value = "icon-like";
+    localStorage.removeItem(props.value);
+  } else if (!JSON.parse(localStorage.getItem(props.value))) {
+    iconSave.value = "icon-like-active";
+    localStorage.setItem(props.value, JSON.stringify(props.value));
+  }
+  if (!JSON.parse(localStorage.getItem(props.value))) {
+    iconSave.value = "icon-like";
+  }
+};
+const updateValue = (e) => {
+  emit("update:value", e.target.value);
+};
+const showPassword = (e) => {
+  emit("showPassword", e.target.value);
 };
 </script>
 
@@ -289,6 +287,14 @@ export default {
       height: 25px;
       width: 26px;
     }
+  }
+  &__error {
+    background: #ff647c;
+    margin-top: 2px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #fff;
+    padding: 0 5px;
   }
   &_is-search {
     .base-field {

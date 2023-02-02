@@ -4,49 +4,45 @@
   </button>
 </template>
 
-<script>
-export default {
-  name: "BaseButton",
-  props: {
-    type: {
-      type: String,
-      default: "",
-    },
-    mode: {
-      type: String,
-      default: "",
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    isIcon: {
-      type: Boolean,
-      default: false,
-    },
-    iconClass: {
-      type: String,
-      default: "",
-    },
-    isSearch: {
-      type: Boolean,
-      default: false,
-    },
+<script setup>
+import { computed } from "vue";
+const props = defineProps({
+  type: {
+    type: String,
+    default: "",
   },
-  computed: {
-    btnClass() {
-      const { mode, disabled, isSearch } = this;
-      return [
-        {
-          "base-btn_disabled": disabled,
-          "base-btn_bordered": mode === "bordered",
-          "base-btn_text": mode === "text",
-          "base-btn_is-search": isSearch,
-        },
-      ];
-    },
+  mode: {
+    type: String,
+    default: "",
   },
-};
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  isIcon: {
+    type: Boolean,
+    default: false,
+  },
+  iconClass: {
+    type: String,
+    default: "",
+  },
+  isSearch: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const btnClass = computed(() => {
+  return [
+    {
+      "base-btn_disabled": props.disabled,
+      "base-btn_bordered": props.mode === "bordered",
+      "base-btn_text": props.mode === "text",
+      "base-btn_is-search": props.isSearch,
+    },
+  ];
+});
 </script>
 
 <style lang="scss" scoped>
