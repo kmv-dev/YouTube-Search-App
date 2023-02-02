@@ -9,6 +9,11 @@ const router = createRouter({
       component: () => import("../views/index.vue"),
     },
     {
+      path: "/ui-kit",
+      name: "ui-kit",
+      component: () => import("../views/ui-kit.vue"),
+    },
+    {
       path: "/:pathMatch(.*)*",
       name: "404",
       component: () => import("../components/Page404/index.vue"),
