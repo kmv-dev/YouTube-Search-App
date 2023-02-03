@@ -283,7 +283,7 @@ const showPassword = (e) => {
     border-radius: 10px;
     font-size: 12px;
     color: #fff;
-    padding: 0 5px;
+    padding: 2px 10px;
   }
   &_is-search {
     .base-field {
