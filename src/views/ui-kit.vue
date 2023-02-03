@@ -1,5 +1,21 @@
 <template>
   <div class="ui-kit">
+    <BaseModal v-model:isShow="showModal" :title="'Вход'" isCloseActive isLogo
+      ><template v-slot:body>
+        <BaseField
+          class="ui-kit__base-field"
+          :placeholder="'BaseField'"
+          :label="'Label'"
+        ></BaseField>
+        <BaseField
+          class="ui-kit__base-field"
+          :placeholder="'BaseField'"
+          :label="'Label'"
+        ></BaseField></template
+      ><template v-slot:footer
+        ><BaseButton>Кнопка</BaseButton></template
+      ></BaseModal
+    >
     <div class="ui-kit__inner">
       <div class="ui-kit__box">
         <BaseButton class="ui-kit__btn">Войти</BaseButton>
@@ -44,6 +60,23 @@
           :error="v.searchValue.$errors"
         ></BaseField>
       </div>
+      <div class="ui-kit__box">
+        <BaseDropdown
+          v-model="selected"
+          :options="options"
+          icon-class="icon-arrow"
+          :label="'Сортировать по'"
+          @select="isSelected()"
+        />
+      </div>
+      <div class="ui-kit__box">
+        <BaseRange v-model="rangeValue" :max="50" :min="1" />
+      </div>
+      <div class="ui-kit__box">
+        <BaseButton class="ui-kit__btn" @click="openModal()"
+          >BaseModal</BaseButton
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -56,7 +89,14 @@ import { helpers, minLength, numeric, email } from "@vuelidate/validators";
 const passwordValue = ref("");
 const passwordType = ref("password");
 const searchValue = ref("");
+const rangeValue = ref("20");
 const emailField = ref("");
+const selected = ref(-1);
+const showModal = ref(false);
+const options = ref([
+  { label: "one", value: "1" },
+  { label: "two", value: "2" },
+]);
 
 const togglePasswordType = () => {
   passwordType.value === "password"
@@ -73,10 +113,9 @@ const rules = computed(() => ({
   },
   passwordValue: {
     minLength: helpers.withMessage(
-      `Минимальная длина: 3 символа`,
-      minLength(3)
+      `Минимальная длина: 6 символов`,
+      minLength(6)
     ),
-    numeric: helpers.withMessage(`Вы можете ввести только цифры`, numeric),
   },
   emailField: {
     email: helpers.withMessage("Вы ввели неверный email", email),
@@ -88,6 +127,14 @@ const v = useVuelidate(rules, {
   passwordValue,
   emailField,
 });
+
+const isSelected = (i) => {
+  selected.value = i;
+};
+const openModal = () => {
+  showModal.value = true;
+  document.body.style.overflow = "hidden";
+};
 </script>
 
 <style lang="scss" scoped>
@@ -107,6 +154,10 @@ const v = useVuelidate(rules, {
     margin: 10px auto;
   }
   &__btn {
+    margin-bottom: 10px;
+  }
+  &__base-field {
+    width: 334px;
     margin-bottom: 10px;
   }
 }
