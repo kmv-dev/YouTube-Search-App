@@ -135,26 +135,16 @@ const fieldClass = computed(() => {
   ];
 });
 const passwordFieldIcon = computed(() => {
-  if (props.type === "password") {
-    return "icon-eye-off";
-  } else {
-    return "icon-eye";
-  }
+  return props.type === "password" ? "icon-eye-off" : "icon-eye";
 });
 const isSave = computed(() => {
-  if (iconSave.value === "icon-like-active") {
-    return true;
-  } else {
-    return false;
-  }
+  return iconSave.value === "icon-like-active" ? true : false;
 });
 
 const isSaveRequest = () => {
-  if (!JSON.parse(localStorage.getItem(props.value))) {
-    iconSave.value = "icon-like";
-  } else {
-    iconSave.value = "icon-like-active";
-  }
+  !JSON.parse(localStorage.getItem(props.value))
+    ? (iconSave.value = "icon-like")
+    : (iconSave.value = "icon-like-active");
 };
 const getSaveData = () => {
   if (JSON.parse(localStorage.getItem(props.value))) {
@@ -183,7 +173,6 @@ const showPassword = (e) => {
 .base-field {
   position: relative;
   font-size: 20px;
-  line-height: 145%;
   &__label {
     color: #272727;
     min-height: 30px;
@@ -198,7 +187,7 @@ const showPassword = (e) => {
     display: flex;
     align-items: center;
     width: 100%;
-    height: 52px;
+    height: 48px;
     padding: 0 15px;
     line-height: 145%;
     border: 1px solid rgba(23, 23, 25, 0.1);
@@ -304,6 +293,7 @@ const showPassword = (e) => {
         margin-bottom: 12px;
       }
       &__control {
+        height: 52px;
         padding: 0 16px 0 16px;
         background: #ffffff;
       }

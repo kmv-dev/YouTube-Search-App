@@ -1,12 +1,17 @@
 <template>
   <button class="base-btn" :class="btnClass" :type="type">
-    <slot class="base-btn__slot" />
+    {{ name }}
+    <slot v-if="!name" class="base-btn__slot"> </slot>
   </button>
 </template>
 
 <script setup>
 import { computed } from "vue";
 const props = defineProps({
+  name: {
+    type: String,
+    default: "",
+  },
   type: {
     type: String,
     default: "",

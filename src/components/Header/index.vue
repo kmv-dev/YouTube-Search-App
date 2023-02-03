@@ -2,7 +2,7 @@
   <header class="header">header</header>
 </template>
 
-<style>
+<style lang="scss" scoped>
 .header {
   text-align: center;
   border-bottom: 1px solid gray;
