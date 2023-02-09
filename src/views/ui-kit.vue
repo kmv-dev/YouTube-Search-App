@@ -3,17 +3,20 @@
     <BaseModal v-model:isShow="showModal" :title="'Вход'" isCloseActive isLogo
       ><template v-slot:body>
         <BaseField
+          v-model:value="userName"
           class="ui-kit__base-field"
           :placeholder="'BaseField'"
           :label="'Label'"
         ></BaseField>
         <BaseField
+          v-model:value="userEmail"
           class="ui-kit__base-field"
           :placeholder="'BaseField'"
           :label="'Label'"
+          type="'email'"
         ></BaseField></template
       ><template v-slot:footer
-        ><BaseButton>Кнопка</BaseButton></template
+        ><BaseButton @click="registration">Кнопка</BaseButton></template
       ></BaseModal
     >
     <div class="ui-kit__inner">
@@ -85,6 +88,8 @@
 import { ref, computed } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { helpers, minLength, numeric, email } from "@vuelidate/validators";
+import { customB64Encode } from "./../test.js";
+import { saveData } from "./../saveJsonData.js";
 
 const passwordValue = ref("");
 const passwordType = ref("password");
@@ -93,6 +98,8 @@ const rangeValue = ref("20");
 const emailField = ref("");
 const selected = ref(-1);
 const showModal = ref(false);
+const userName = ref("");
+const userEmail = ref("");
 const options = ref([
   { label: "one", value: "1" },
   { label: "two", value: "2" },
@@ -134,6 +141,37 @@ const isSelected = (i) => {
 const openModal = () => {
   showModal.value = true;
   document.body.style.overflow = "hidden";
+};
+const registration = () => {
+  if (userEmail.value && userName.value) {
+    const payload = {
+      header: {
+        alg: "H256",
+        typ: "JWT",
+      },
+      payload: {
+        iss: "customJwtGenerator",
+        sub: "auth",
+        exp: new Date().toLocaleTimeString("ru-Ru"),
+      },
+      signature: Math.random().toString(36).substring(2),
+    };
+    const Jwt = `${customB64Encode(payload.header)}.${customB64Encode(
+      payload.payload
+    )}.${payload.signature}`;
+    const refreshToken = `${customB64Encode(payload.header)}.${customB64Encode(
+      payload.payload
+    )}.${payload.signature}`;
+    const data = {
+      id: Math.floor(Math.random() * 111) + Math.floor(Math.random() * 7888),
+      userName: userName.value,
+      userEmail: userEmail.value,
+      access: Jwt,
+      refresh: refreshToken,
+    };
+
+    saveData("bd", data);
+  }
 };
 </script>
 
