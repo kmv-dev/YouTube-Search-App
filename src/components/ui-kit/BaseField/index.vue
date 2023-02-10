@@ -173,6 +173,7 @@ const showPassword = (e) => {
 .base-field {
   position: relative;
   font-size: 20px;
+  margin-bottom: 10px;
   &__label {
     color: #272727;
     min-height: 30px;

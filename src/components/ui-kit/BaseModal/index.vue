@@ -2,7 +2,7 @@
   <Transition>
     <div class="base-modal" v-if="isShow">
       <div class="base-modal__wrapper">
-        <div class="base-modal__container">
+        <div class="base-modal__container" :class="containerClass">
           <span
             v-if="isCloseActive"
             class="base-modal__close"
@@ -37,6 +37,7 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 const emit = defineEmits(["update:isShow"]);
 const props = defineProps({
   title: {
@@ -55,6 +56,18 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isShadow: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const containerClass = computed(() => {
+  return [
+    {
+      "base-modal__container_is-shadow": props.isShadow,
+    },
+  ];
 });
 
 const modalHide = () => {
@@ -87,7 +100,9 @@ const modalHide = () => {
     background: #ffffff;
     border: 1px solid rgba(39, 39, 39, 0.1);
     border-radius: 10px;
-    box-shadow: 0px 10px 50px rgba(19, 144, 229, 0.8);
+    &_is-shadow {
+      box-shadow: 0px 10px 50px rgba(19, 144, 229, 0.8);
+    }
   }
   &__body {
     margin-bottom: 30px;
@@ -126,6 +141,9 @@ const modalHide = () => {
     }
   }
   &__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     .header {
       &__logo-link {
         display: inline-block;

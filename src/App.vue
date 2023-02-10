@@ -1,32 +1,18 @@
 <template>
-  <div class="primary">
-    <Header />
-    <RouterView class="primary__content" />
-    <Footer />
-  </div>
+  <component :is="layout">
+    <router-view />
+  </component>
 </template>
 
-<script>
-import Header from "@/components/Header/index.vue";
-import Footer from "@/components/Footer/index.vue";
-export default {
-  components: {
-    Header,
-    Footer,
-  },
-};
-</script>
+<script setup>
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+import guestLayout from "./layouts/guest.vue";
+import defaultLayout from "./layouts/default.vue";
 
-<style lang="scss">
-.primary {
-  background: #fafafa;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-family: $Roboto;
-  &__content {
-    flex-grow: 1;
-  }
-}
-</style>
+const route = useRoute();
+const layout = computed(() => {
+  const layout = route.meta.layout;
+  return layout === "default" ? defaultLayout : guestLayout;
+});
+</script>

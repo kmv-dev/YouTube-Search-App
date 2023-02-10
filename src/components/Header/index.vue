@@ -15,24 +15,35 @@
               v-for="(item, index) of links"
               :key="item.title"
               class="nav-bar__item"
-              @click="setTabIndex(index)"
             >
-              <router-link :to="item.to">
-                {{ item.title }}
+              <router-link :to="item.to" @click="setTabIndex(index)">
+                <span>{{ item.title }}</span>
               </router-link>
             </div>
             <div class="nav-bar__shape" :style="currentLinkBorderPosition" />
           </div>
         </div>
       </div>
-      <BaseButton :mode="'text'">Войти</BaseButton>
+      <div class="header__action">
+        <BaseButton
+          class="header__button header__button_left"
+          :mode="'text'"
+          @click="toSignIn"
+          >Вход</BaseButton
+        >
+        <BaseButton class="header__button" :mode="'text'" @click="toSignUp"
+          >Регистрация</BaseButton
+        >
+      </div>
     </div>
   </header>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const tabIndex = ref(0);
 
 const links = [
@@ -45,13 +56,23 @@ const links = [
     to: "/ui-kit",
   },
 ];
-
+onMounted(() => {
+  router.currentRoute.value.fullPath === "/ui-kit"
+    ? (tabIndex.value = 1)
+    : (tabIndex.value = 0);
+});
 const currentLinkBorderPosition = computed(() => {
   return `left: ${tabIndex.value * 50}%;`;
 });
 
 const setTabIndex = (index) => {
   tabIndex.value = index;
+};
+const toSignIn = () => {
+  router.push("/sign-in");
+};
+const toSignUp = () => {
+  router.push("/sign-up");
 };
 </script>
 
@@ -93,22 +114,24 @@ const setTabIndex = (index) => {
     &__item {
       padding: 28px 0;
       color: #1390e5;
-      cursor: pointer;
       transition: 0.2s ease-in-out;
       a {
+        text-decoration: none;
+      }
+      span {
         display: block;
         color: #1390e5;
         text-decoration: none;
         transition: 0.2s ease-in-out;
         word-break: break-all;
-      }
-      &:hover a {
-        color: #e1e4ed;
+        &:hover {
+          opacity: 0.7;
+        }
       }
     }
     &__shape {
       $tabsCount: 2;
-      $pagePadding: 10px;
+      $pagePadding: 5px;
       margin: 0 $pagePadding;
       position: absolute;
       height: 2px;
@@ -117,6 +140,14 @@ const setTabIndex = (index) => {
       width: calc((100% / #{$tabsCount}) - #{$pagePadding * 2});
       background: #1390e5;
       transition: 0.3s ease-in-out;
+    }
+  }
+  &__action {
+    display: flex;
+  }
+  &__button {
+    &_left {
+      margin-right: 20px;
     }
   }
 }
