@@ -25,14 +25,8 @@
         </div>
       </div>
       <div class="header__action">
-        <BaseButton
-          class="header__button header__button_left"
-          :mode="'text'"
-          @click="toSignIn"
-          >Вход</BaseButton
-        >
-        <BaseButton class="header__button" :mode="'text'" @click="toSignUp"
-          >Регистрация</BaseButton
+        <BaseButton class="header__button" :mode="'text'" @click="logOut"
+          >Выйти</BaseButton
         >
       </div>
     </div>
@@ -57,7 +51,7 @@ const links = [
   },
 ];
 onMounted(() => {
-  router.currentRoute.value.fullPath === "/ui-kit"
+  router.currentRoute.value.fullPath === "/favourites"
     ? (tabIndex.value = 1)
     : (tabIndex.value = 0);
 });
@@ -68,11 +62,8 @@ const currentLinkBorderPosition = computed(() => {
 const setTabIndex = (index) => {
   tabIndex.value = index;
 };
-const toSignIn = () => {
-  router.push("/sign-in");
-};
-const toSignUp = () => {
-  router.push("/sign-up");
+const logOut = () => {
+  console.log("вышел");
 };
 </script>
 

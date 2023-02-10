@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import store from "../store";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +9,12 @@ const router = createRouter({
       name: "home",
       meta: { layout: "default", auth: true },
       component: () => import("../views/index.vue"),
+    },
+    {
+      path: "/favourites",
+      name: "favourites",
+      meta: { layout: "default", auth: true },
+      component: () => import("../views/favourites.vue"),
     },
     {
       path: "/sign-in",
@@ -36,8 +43,8 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to) => {
-  const auth = false;
+router.beforeEach(async (to) => {
+  const auth = await store.getters.getAuthStatus;
   if (to.meta.auth && !auth) {
     return { name: "sign-in" };
   } else if (!to.meta.auth && auth) {
