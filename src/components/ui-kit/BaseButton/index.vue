@@ -1,5 +1,5 @@
 <template>
-  <button class="base-btn" :class="btnClass" :type="type">
+  <button class="base-btn" :class="btnClass" :type="type" :form="form">
     {{ name }}
     <slot v-if="!name" class="base-btn__slot"> </slot>
   </button>
@@ -35,6 +35,10 @@ const props = defineProps({
   isSearch: {
     type: Boolean,
     default: false,
+  },
+  form: {
+    type: String,
+    default: "",
   },
 });
 

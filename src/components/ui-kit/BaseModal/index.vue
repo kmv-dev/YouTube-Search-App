@@ -21,6 +21,7 @@
               />
             </a>
             <h2 class="header__title" v-if="title">{{ title }}</h2>
+            <h2 class="header__subtitle" v-if="subTitle">{{ subTitle }}...</h2>
           </div>
 
           <div class="base-modal__body">
@@ -44,6 +45,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  subTitle: {
+    type: String,
+    default: "",
+  },
   isLogo: {
     type: Boolean,
     default: false,
@@ -60,12 +65,17 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isSucces: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const containerClass = computed(() => {
   return [
     {
       "base-modal__container_is-shadow": props.isShadow,
+      "base-modal__container_is-succes": props.isSucces,
     },
   ];
 });
@@ -102,6 +112,17 @@ const modalHide = () => {
     border-radius: 10px;
     &_is-shadow {
       box-shadow: 0px 10px 50px rgba(19, 144, 229, 0.8);
+    }
+    &_is-succes {
+      opacity: 0.9;
+      width: fit-content;
+      padding: 20px 50px;
+      box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.2);
+      .base-modal__header {
+        .header__title {
+          color: #29ab87;
+        }
+      }
     }
   }
   &__body {
@@ -160,6 +181,20 @@ const modalHide = () => {
         font-size: 18px;
         color: #000000;
         margin-bottom: 10px;
+      }
+      &__subtitle {
+        margin-bottom: -20px;
+        color: #7c838d;
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 100;
+        clip-path: inset(0 1.4ch 0 0);
+        animation: l 2s steps(4) infinite;
+      }
+      @keyframes l {
+        to {
+          clip-path: inset(0 -1ch 0 0);
+        }
       }
     }
   }
