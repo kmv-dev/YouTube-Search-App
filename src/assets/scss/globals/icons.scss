@@ -56,3 +56,19 @@
 .icon-list:before {
   content: "\e907";
 }
+
+.icon-eye {
+  &::before {
+    color: #c8c8c8;
+  }
+}
+.icon-like-active::before {
+  display: inline-block;
+  content: " ";
+  background-image: url("../../../assets/img/like-active.svg");
+  background-size: 26px 26px;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 25px;
+  width: 26px;
+}
