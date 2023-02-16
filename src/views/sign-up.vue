@@ -70,10 +70,20 @@ const isValidate = ref(false);
 const passwordType = ref("password");
 const confirmPasswordType = ref("password");
 
+// проверка на уже существующий email
+const isDubleEmail = (value) => {
+  const user = JSON.parse(localStorage.getItem("users")) || [];
+  return user.every((user) => user.userEmail !== value);
+};
+
 const rules = computed(() => ({
   userEmail: {
     required: helpers.withMessage("Поле не может быть пустым", required),
     email: helpers.withMessage("Вы ввели неверный email", email),
+    userEmail: helpers.withMessage(
+      "Пользователь с таким email сушествует",
+      isDubleEmail
+    ),
   },
   userPassword: {
     required: helpers.withMessage("Поле не может быть пустым", required),
