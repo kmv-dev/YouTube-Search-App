@@ -2,17 +2,21 @@
   <div class="content">
     <div class="content__inner">
       <h1 class="content__title" :class="activeClass">Поиск видео</h1>
-      <BaseField
-        v-model:value="v.searchValue.$model"
-        class="content__field"
-        isSearchField
-        :class="activeClass"
-        :placeholder="'поиск'"
-        :error="v.searchValue.$errors"
-        ><template v-slot:button
-          ><BaseButton isSearch @click="search">Поиск</BaseButton></template
-        ></BaseField
-      >
+      <form action="#" @submit.prevent="search" id="searchForm">
+        <BaseField
+          v-model:value="v.searchValue.$model"
+          class="content__field"
+          isSearchField
+          :class="activeClass"
+          :placeholder="'поиск'"
+          :error="v.searchValue.$errors"
+          ><template v-slot:button
+            ><BaseButton isSearch :type="'submit'" :form="'searchForm'"
+              >Поиск</BaseButton
+            ></template
+          ></BaseField
+        >
+      </form>
       <div v-if="activeClass[0].active">
         {{ getYouTubeResponce }}
       </div>
@@ -22,16 +26,18 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useStore } from "vuex";
+import useVuelidate from "@vuelidate/core";
 
 const store = useStore();
 const searchValue = ref("");
 const active = ref(false);
 
+//getters
 const getYouTubeResponce = computed(() => store.getters.getSearchData);
 
+//actions
 const getYouTubeVideo = (maxResults, search) =>
   store.dispatch("getYouTubeVideos", { maxResults, search });
 
@@ -56,8 +62,17 @@ const v = useVuelidate(rules, {
 });
 
 const search = async () => {
-  await getYouTubeVideo(12, searchValue.value);
-  active.value = true;
+  try {
+    const isFormCorrect = await v.value.$validate();
+    if (isFormCorrect) {
+      await getYouTubeVideo(12, searchValue.value);
+      active.value = true;
+    } else {
+      return;
+    }
+  } catch (e) {
+    console.log(e);
+  }
 };
 </script>
 
