@@ -5,27 +5,25 @@
       <form action="#" @submit.prevent="userSignUp" id="signup">
         <BaseField
           v-model:value="v.userEmail.$model"
-          :error="v.userEmail.$errors"
           class="sign-up__field"
+          :error="v.userEmail.$errors"
           :placeholder="'Введите email'"
           :label="'Email'"
         ></BaseField>
         <BaseField
           v-model:value="v.userPassword.$model"
+          class="sign-up__field"
           :error="v.userPassword.$errors"
           :type="passwordType"
-          isPassword
-          class="sign-up__field"
           :placeholder="'Введите пароль'"
           :label="'Пароль'"
           @showPassword="togglePasswordType()"
         ></BaseField>
         <BaseField
           v-model:value="v.userConfirmPassword.$model"
+          class="sign-up__field"
           :error="v.userConfirmPassword.$errors"
           :type="confirmPasswordType"
-          isPassword
-          class="sign-up__field"
           :placeholder="'Введите пароль'"
           :label="'Повторите пароль'"
           @showPassword="toggleConfirmPasswordType()"
@@ -39,7 +37,7 @@
         <BaseButton
           class="sign-up__button sign-up__button_to-sign-up"
           :mode="'text'"
-          @click="toSignIn"
+          @click="toSignInPage"
           >Войти</BaseButton
         >
       </div></template
@@ -76,10 +74,11 @@ const isDubleEmail = (value) => {
   return user.every((user) => user.userEmail !== value);
 };
 
+// правила валидации
 const rules = computed(() => ({
   userEmail: {
     required: helpers.withMessage("Поле не может быть пустым", required),
-    email: helpers.withMessage("Вы ввели неверный email", email),
+    email: helpers.withMessage("Некорректный email", email),
     userEmail: helpers.withMessage(
       "Пользователь с таким email сушествует",
       isDubleEmail
@@ -105,6 +104,7 @@ const rules = computed(() => ({
   },
 }));
 
+// инициализайия полей валидации
 const v = useVuelidate(rules, {
   userEmail,
   userPassword,
@@ -114,17 +114,21 @@ const v = useVuelidate(rules, {
 const userSignUp = async () => {
   const isFormCorrect = await v.value.$validate();
   if (isFormCorrect) {
-    isValidate.value = true;
-    await new Promise((resolve) =>
-      setTimeout(() => resolve(console.log("registration is succes!")), 4000)
-    );
     const payload = {
       id: getRandomId(0, 89755738883),
       userEmail: userEmail.value,
       userPassword: userPassword.value,
     };
-    setLocalStorage("users", payload);
-    toSignIn();
+    try {
+      setLocalStorage("users", payload);
+      isValidate.value = true; // активация модалки при успешном прохождении валидации формы
+      await new Promise((resolve) =>
+        setTimeout(() => resolve(console.log("registration is succes!")), 4000)
+      ); // эмитация задержки ответа от сервера статус ок 200
+      toSignInPage(); // перенаправление
+    } catch (e) {
+      console.log(e);
+    }
   } else {
     return;
   }
@@ -142,7 +146,7 @@ const toggleConfirmPasswordType = () => {
     : (confirmPasswordType.value = "password");
 };
 
-const toSignIn = () => {
+const toSignInPage = () => {
   router.push("/sign-in");
 };
 </script>

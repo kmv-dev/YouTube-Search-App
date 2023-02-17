@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="header__inner">
-      <a class="header__logo" href="https://sibdev.pro/">
+      <a class="header__logo" href="https://sibdev.pro/" target="_blank">
         <img
           class="header__logo-img"
           src="@/assets/img/sibdev-logo.svg"
@@ -47,7 +47,7 @@ const links = [
   },
   {
     title: "Избранное",
-    to: "/ui-kit",
+    to: "/favourites",
   },
 ];
 onMounted(() => {
@@ -63,7 +63,8 @@ const setTabIndex = (index) => {
   tabIndex.value = index;
 };
 const logOut = () => {
-  console.log("вышел");
+  localStorage.removeItem("jwtToken");
+  router.push("/sign-in");
 };
 </script>
 

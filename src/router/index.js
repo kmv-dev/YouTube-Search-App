@@ -42,15 +42,26 @@ const router = createRouter({
     },
   ],
 });
-
+// проверка авторизации user
 router.beforeEach(async (to) => {
-  const auth = await store.getters.getAuthStatus;
-  if (to.meta.auth && !auth) {
-    return { name: "sign-in" };
-  } else if (!to.meta.auth && auth) {
-    return { name: "home" };
-  } else {
-    return;
+  try {
+    if (localStorage.getItem("jwtToken")) {
+      const setAuthStatus = (isAuth) => store.dispatch("setAuth", { isAuth });
+      setAuthStatus(true);
+    } else {
+      const setAuthStatus = (isAuth) => store.dispatch("setAuth", { isAuth });
+      setAuthStatus(false);
+    }
+    const auth = await store.getters.getAuthStatus;
+    if (to.meta.auth && !auth) {
+      return { name: "sign-in" };
+    } else if (!to.meta.auth && auth) {
+      return { name: "home" };
+    } else {
+      return;
+    }
+  } catch (e) {
+    console.log(e);
   }
 });
 

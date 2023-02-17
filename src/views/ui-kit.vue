@@ -1,6 +1,11 @@
 <template>
   <div class="ui-kit">
-    <BaseModal v-model:isShow="showModal" :title="'Вход'" isCloseActive isLogo
+    <BaseModal
+      v-model:isShow="showModal"
+      :title="'Вход'"
+      isCloseActive
+      isLogo
+      isShadow
       ><template v-slot:body>
         <BaseField
           class="ui-kit__base-field"

@@ -1,23 +1,30 @@
 <template>
   <BaseModal :isShow="true" :title="'Вход'" isLogo
     ><template v-slot:body>
-      <BaseField
-        class="sign-in__field"
-        :placeholder="'Введите email'"
-        :label="'Логин'"
-      ></BaseField>
-      <BaseField
-        class="sign-in__field"
-        :placeholder="'Введите пароль'"
-        :label="'Пароль'"
-      ></BaseField></template
+      <form action="#" @submit.prevent="userSignIn" id="signin">
+        <BaseField
+          v-model:value="v.userEmail.$model"
+          class="sign-in__field"
+          :error="v.userEmail.$errors"
+          :placeholder="'Введите email'"
+          :label="'Логин'"
+        ></BaseField>
+        <BaseField
+          v-model:value="v.userPassword.$model"
+          class="sign-in__field"
+          :error="v.userPassword.$errors"
+          :type="passwordType"
+          :placeholder="'Введите пароль'"
+          :label="'Пароль'"
+          @showPassword="togglePasswordType()"
+        ></BaseField></form></template
     ><template v-slot:footer
       ><div class="sign-in__buttons">
-        <BaseButton>Войти</BaseButton>
+        <BaseButton :type="'submit'" :form="'signin'">Войти</BaseButton>
         <BaseButton
-          class="sign-in__button sign-in__button_to-sign-up"
+          class="sign-in__button sign-in__button_to-sign-in"
           :mode="'text'"
-          @click="toSignUp"
+          @click="toSignUpPage"
           >Регистрация</BaseButton
         >
       </div></template
@@ -26,12 +33,81 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { required, email, helpers } from "@vuelidate/validators";
+import { csrfToken } from "../utils/csrfTokenGenerator";
+import useVuelidate from "@vuelidate/core";
 
 const router = useRouter();
+const store = useStore();
 
-const toSignUp = () => {
+// store actions
+const logInAction = (email, isAuth) =>
+  store.dispatch("addUser", { email, isAuth });
+
+const userEmail = ref("");
+const userPassword = ref("");
+const passwordType = ref("password");
+
+// проверка email в "базе данных(localStorage)"
+const isCheckEmail = (value) => {
+  const users = JSON.parse(localStorage.getItem("users"));
+  return users.some((user) => user.userEmail === value);
+};
+
+// проверка password в "базе данных(localStorage)"
+const isCheckPassword = (value) => {
+  const user = JSON.parse(localStorage.getItem("users"));
+  return user.some((user) => user.userPassword === value);
+};
+
+// правила валидации
+const rules = computed(() => ({
+  userEmail: {
+    required: helpers.withMessage("Поле не может быть пустым", required),
+    email: helpers.withMessage("Некорректный email", email),
+    userEmail: helpers.withMessage(
+      "такой email не зарегистрирован",
+      isCheckEmail
+    ),
+  },
+  userPassword: {
+    required: helpers.withMessage("Поле не может быть пустым", required),
+    userPassword: helpers.withMessage("Неправильный пароль", isCheckPassword),
+  },
+}));
+
+// инициализайия полей валидации
+const v = useVuelidate(rules, {
+  userEmail,
+  userPassword,
+});
+
+const userSignIn = async () => {
+  const isFormCorrect = await v.value.$validate();
+  if (isFormCorrect) {
+    await logInAction(userEmail.value, true);
+    csrfToken();
+    toHomePage();
+  } else {
+    return;
+  }
+};
+
+const togglePasswordType = () => {
+  passwordType.value === "password"
+    ? (passwordType.value = "text")
+    : (passwordType.value = "password");
+};
+
+const toSignUpPage = () => {
   router.push("/sign-up");
+};
+
+const toHomePage = () => {
+  router.push("/");
 };
 </script>
 
@@ -45,7 +121,7 @@ const toSignUp = () => {
     flex-direction: column;
   }
   &__button {
-    &_to-sign-up {
+    &_to-sign-in {
       margin-top: 15px;
       font-size: 16px;
     }

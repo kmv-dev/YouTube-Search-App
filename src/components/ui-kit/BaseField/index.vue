@@ -21,7 +21,7 @@
         ></div>
         <button>
           <span
-            v-if="isPassword"
+            v-if="type === 'password'"
             class="ui-kit__icon"
             :class="passwordFieldIcon"
             @click="showPassword"
@@ -127,7 +127,7 @@ const fieldClass = computed(() => {
     {
       "base-field_is-search": props.isSearchField,
       "base-field_is-readonly": props.isReadonly,
-      "base-field_is-password": props.isPassword,
+      "base-field_is-password": props.type === "password",
       "base-field_is-center": props.isTextCenter,
       "base-field_like-position": props.isSearchFieldBtn,
       "base-field_not-save-value": iconSave.value,
