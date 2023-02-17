@@ -10,13 +10,11 @@
         :placeholder="'поиск'"
         :error="v.searchValue.$errors"
         ><template v-slot:button
-          ><BaseButton isSearch @click="test">Поиск</BaseButton></template
+          ><BaseButton isSearch @click="search">Поиск</BaseButton></template
         ></BaseField
       >
       <div v-if="activeClass[0].active">
-        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Odio eum ea
-        doloribus delectus ut maxime optio, quae cum voluptate, in modi corporis
-        excepturi, nam fuga aut aspernatur. Aspernatur, voluptates atque?
+        {{ getYouTubeResponce }}
       </div>
     </div>
   </div>
@@ -26,9 +24,16 @@
 import { ref, computed } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
+import { useStore } from "vuex";
 
+const store = useStore();
 const searchValue = ref("");
 const active = ref(false);
+
+const getYouTubeResponce = computed(() => store.getters.getSearchData);
+
+const getYouTubeVideo = (maxResults, search) =>
+  store.dispatch("getYouTubeVideos", { maxResults, search });
 
 const activeClass = computed(() => {
   return [
@@ -50,7 +55,8 @@ const v = useVuelidate(rules, {
   searchValue,
 });
 
-const test = () => {
+const search = async () => {
+  await getYouTubeVideo(12, searchValue.value);
   active.value = true;
 };
 </script>
