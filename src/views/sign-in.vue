@@ -86,13 +86,17 @@ const v = useVuelidate(rules, {
 });
 
 const userSignIn = async () => {
-  const isFormCorrect = await v.value.$validate();
-  if (isFormCorrect) {
-    await logInAction(userEmail.value, true);
-    csrfToken();
-    toHomePage();
-  } else {
-    return;
+  try {
+    const isFormCorrect = await v.value.$validate();
+    if (isFormCorrect) {
+      await logInAction(userEmail.value, true);
+      csrfToken();
+      toHomePage();
+    } else {
+      return;
+    }
+  } catch (e) {
+    console.log(e);
   }
 };
 

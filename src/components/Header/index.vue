@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -50,14 +50,26 @@ const links = [
     to: "/favourites",
   },
 ];
+
+watch(
+  () => router.currentRoute.value.fullPath,
+  () => {
+    isCheckActiveTab();
+  }
+);
+
 onMounted(() => {
-  router.currentRoute.value.fullPath === "/favourites"
-    ? (tabIndex.value = 1)
-    : (tabIndex.value = 0);
+  isCheckActiveTab();
 });
 const currentLinkBorderPosition = computed(() => {
   return `left: ${tabIndex.value * 50}%;`;
 });
+
+const isCheckActiveTab = () => {
+  router.currentRoute.value.fullPath === "/favourites"
+    ? (tabIndex.value = 1)
+    : (tabIndex.value = 0);
+};
 
 const setTabIndex = (index) => {
   tabIndex.value = index;
@@ -77,6 +89,9 @@ const logOut = () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+  &__logo {
+    margin-left: -10px;
   }
   .nav-bar {
     width: 100%;
