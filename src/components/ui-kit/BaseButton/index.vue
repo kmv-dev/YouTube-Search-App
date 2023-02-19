@@ -1,6 +1,7 @@
 <template>
   <button class="base-btn" :class="btnClass" :type="type" :form="form">
-    {{ name }}
+    <span class="base-btn__name">{{ name }}</span>
+    <div v-if="isLoading" class="base-btn__loader"></div>
     <slot v-if="!name" class="base-btn__slot"> </slot>
   </button>
 </template>
@@ -21,6 +22,10 @@ const props = defineProps({
     default: "",
   },
   disabled: {
+    type: Boolean,
+    default: false,
+  },
+  isLoading: {
     type: Boolean,
     default: false,
   },
@@ -49,6 +54,7 @@ const btnClass = computed(() => {
       "base-btn_bordered": props.mode === "bordered",
       "base-btn_text": props.mode === "text",
       "base-btn_is-search": props.isSearch,
+      "base-btn_is-loading": props.isLoading,
     },
   ];
 });
@@ -71,6 +77,28 @@ const btnClass = computed(() => {
   &:hover {
     opacity: 0.7;
   }
+  &__name {
+    display: inline-block;
+    margin-right: 0;
+  }
+  &__loader {
+    width: 18px;
+    height: 18px;
+    color: #ffffff;
+    border: 2px solid currentcolor;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    animation: 1s loader linear infinite;
+  }
+
+  @keyframes loader {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
   &__slot {
     text-align: center;
   }
@@ -89,12 +117,19 @@ const btnClass = computed(() => {
     min-width: auto;
     background: transparent;
     color: #1390e5;
+    transition: 0.3s ease-in-out;
   }
   &_is-search {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     margin-left: 15px;
     margin-right: -16px;
+    .base-btn__name {
+      margin-right: 10px;
+    }
+  }
+  &_is-loading {
+    pointer-events: none;
   }
 }
 </style>

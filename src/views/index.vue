@@ -11,14 +11,19 @@
           :placeholder="'поиск'"
           :error="v.searchValue.$errors"
           ><template v-slot:button
-            ><BaseButton isSearch :type="'submit'" :form="'searchForm'"
-              >Поиск</BaseButton
-            ></template
-          ></BaseField
-        >
+            ><BaseButton
+              isSearch
+              :isLoading="loading"
+              :type="'submit'"
+              :form="'searchForm'"
+              :name="nameButton" /></template
+        ></BaseField>
       </form>
       <div v-if="activeClass[0].active">
-        {{ getYouTubeResponce }}
+        <VideoList
+          :videos="getYouTubeResponce"
+          :searchRequest="searchValue"
+        ></VideoList>
       </div>
     </div>
   </div>
@@ -26,12 +31,15 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import { required, helpers } from "@vuelidate/validators";
+import { required, helpers, minLength } from "@vuelidate/validators";
 import { useStore } from "vuex";
+import VideoList from "../components/VideoList/index.vue";
 import useVuelidate from "@vuelidate/core";
 
 const store = useStore();
 const searchValue = ref("");
+const nameButton = ref("Поиск");
+const loading = ref(false);
 const active = ref(false);
 
 //getters
@@ -53,6 +61,7 @@ const activeClass = computed(() => {
 const rules = computed(() => ({
   searchValue: {
     required: helpers.withMessage("Поле не может быть пустым", required),
+    minLength: helpers.withMessage("Слишком короткий запрос", minLength(3)),
   },
 }));
 
@@ -65,7 +74,9 @@ const search = async () => {
   try {
     const isFormCorrect = await v.value.$validate();
     if (isFormCorrect) {
+      loading.value = true;
       await getYouTubeVideo(12, searchValue.value);
+      loading.value = false;
       active.value = true;
     } else {
       return;
@@ -100,6 +111,7 @@ const search = async () => {
     transition: all 0.3s ease-in-out;
     &.active {
       width: 100%;
+      margin-bottom: 40px;
     }
   }
 }
