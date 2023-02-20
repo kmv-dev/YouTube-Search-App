@@ -103,10 +103,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isSearchFieldBtn: {
-    type: Boolean,
-    default: false,
-  },
   isRequired: {
     type: Boolean,
     default: false,
@@ -129,7 +125,7 @@ const fieldClass = computed(() => {
       "base-field_is-readonly": props.isReadonly,
       "base-field_is-password": props.type === "password",
       "base-field_is-center": props.isTextCenter,
-      "base-field_like-position": props.isSearchFieldBtn,
+      "base-field_like-position": props.isSearchField,
       "base-field_not-save-value": iconSave.value,
     },
   ];

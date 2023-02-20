@@ -16,11 +16,19 @@
         >
       </div>
       <div class="header__action">
-        <span class="header__button icon-list"></span>
-        <span class="header__button header__button_right icon-grid"></span>
+        <span
+          class="header__button icon-list"
+          :class="{ active: modeVisible === 0 }"
+          @click="toggleModeVisible"
+        ></span>
+        <span
+          class="header__button header__button_right icon-grid"
+          :class="{ active: modeVisible === 1 }"
+          @click="toggleModeVisible"
+        ></span>
       </div>
     </div>
-    <div class="videos__items">
+    <div class="videos__items" :class="itemsGridPosition">
       <div
         v-for="video in videos"
         :key="video.id.videoId"
@@ -39,9 +47,11 @@
         </div>
         <div class="item__info">
           <span class="item__text item__text_title">{{
-            video.snippet.title
+            ellipsisText(video.snippet.title, 50)
           }}</span>
-          <span class="item__text">{{ video.snippet.description }}</span>
+          <span class="item__text item__text_description">{{
+            ellipsisText(video.snippet.description, 25)
+          }}</span>
           <span class="item__text"
             >{{
               video.viewCount.data.items[0].statistics.viewCount
@@ -55,6 +65,10 @@
 </template>
 
 <script setup>
+import { ref, computed } from "vue";
+
+const modeVisible = ref(1);
+
 const props = defineProps({
   videos: {
     type: Object,
@@ -65,6 +79,25 @@ const props = defineProps({
     default: "",
   },
 });
+
+const itemsGridPosition = computed(() => {
+  return [
+    {
+      videos__items_grid: modeVisible.value === 1,
+      videos__items_list: modeVisible.value === 0,
+    },
+  ];
+});
+
+const ellipsisText = (text, maxLength) => {
+  return text.length > maxLength && modeVisible.value !== 0
+    ? text.slice(0, maxLength) + "..."
+    : text;
+};
+
+const toggleModeVisible = () => {
+  modeVisible.value === 0 ? (modeVisible.value = 1) : (modeVisible.value = 0);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -94,24 +127,47 @@ const props = defineProps({
     &__button {
       font-size: 26px;
       cursor: pointer;
+      transition: opacity 0.3s ease-in-out;
+      opacity: 0.5;
+      &.active {
+        opacity: 1;
+      }
       &_right {
         margin-left: 5px;
       }
     }
   }
   &__items {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    &_list {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      &.videos__items .item {
+        display: flex;
+      }
+      &.videos__items .item__iframe {
+        margin: 0 20px 20px 0;
+      }
+    }
+    &_grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      grid-gap: 20px;
+      &.videos__items .item {
+        flex-direction: column;
+        flex-basis: min-content;
+      }
+    }
   }
   .item {
-    display: flex;
     &__iframe {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       border: 1px solid #1390e5;
       border-radius: 10px;
       overflow: hidden;
-      margin: 0 20px 20px 0;
     }
     &__info {
       display: flex;
@@ -126,6 +182,9 @@ const props = defineProps({
       &_title {
         font-weight: 500;
         color: #000000;
+      }
+      &_description {
+        margin-bottom: 0;
       }
     }
   }
