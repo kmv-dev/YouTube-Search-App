@@ -5,4 +5,7 @@ export default {
   setAuth({ commit }, { isAuth }) {
     commit("setAuth", { isAuth });
   },
+  addSearchState({ commit }, { searchStatus, searchValue }) {
+    commit("setSearchState", { searchStatus, searchValue });
+  },
 };

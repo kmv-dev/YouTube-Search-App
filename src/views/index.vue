@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { required, helpers, minLength } from "@vuelidate/validators";
 import { useStore } from "vuex";
 import VideoList from "../components/VideoList/index.vue";
@@ -44,10 +44,21 @@ const active = ref(false);
 
 //getters
 const getYouTubeResponce = computed(() => store.getters.getSearchData);
+const getSearchState = computed(() => store.getters.getSearchState);
 
 //actions
 const getYouTubeVideo = (maxResults, search) =>
   store.dispatch("getYouTubeVideos", { maxResults, search });
+const setSearchState = (searchStatus, searchValue) =>
+  store.dispatch("addSearchState", { searchStatus, searchValue });
+
+onMounted(() => {
+  // проверяем состояние поиска и если он активный, то состояние страницы не изменяется, если нет, то сбрасыватся на начальное(при перезагрузке страницы например)
+  if (getSearchState.value.searchStatus) {
+    active.value = true;
+    searchValue.value = getSearchState.value.searchValue;
+  }
+});
 
 const activeClass = computed(() => {
   return [
@@ -76,6 +87,7 @@ const search = async () => {
     if (isFormCorrect) {
       loading.value = true;
       await getYouTubeVideo(12, searchValue.value);
+      await setSearchState(true, searchValue.value);
       loading.value = false;
       active.value = true;
     } else {

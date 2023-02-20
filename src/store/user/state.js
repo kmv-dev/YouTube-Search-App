@@ -4,4 +4,8 @@ export default () => ({
     isAuth: false,
     jwt: null,
   },
+  search: {
+    searchStatus: false,
+    searchValue: "",
+  },
 });
