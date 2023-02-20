@@ -27,13 +27,14 @@
             @click="showPassword"
           ></span>
         </button>
-        <div class="base-field__save-action">
+        <div class="base-field__save-action" :class="iconSaveClass">
           <Transition>
             <button
-              v-if="value && isSearchField"
+              v-if="value && isSearchField && value.length >= 3"
               class="base-field__save-icon"
+              type="button"
               :class="iconSave"
-              @click="getSaveData"
+              @click="showModalRequest"
             ></button>
           </Transition>
           <Transition>
@@ -61,7 +62,10 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
+import { useStore } from "vuex";
+
 const emit = defineEmits(["update:value", "showPassword"]);
+const store = useStore();
 const props = defineProps({
   value: {
     type: String,
@@ -111,6 +115,12 @@ const props = defineProps({
 
 const iconSave = ref("icon-like");
 
+//getters
+const getSearchState = computed(() => store.getters.getSearchState);
+
+//actions
+const setModalShow = (value) => store.dispatch("showModal", value);
+
 watch(
   () => props.value,
   () => {
@@ -130,12 +140,26 @@ const fieldClass = computed(() => {
     },
   ];
 });
+// блокирую кнопку вызова модалки пока страница поиска не перешла в активное состояние
+const iconSaveClass = computed(() => {
+  return [
+    {
+      "base-field__save-action_event-none": !getSearchState.value.searchStatus,
+    },
+  ];
+});
+
 const passwordFieldIcon = computed(() => {
   return props.type === "password" ? "icon-eye-off" : "icon-eye";
 });
 const isSave = computed(() => {
   return iconSave.value === "icon-like-active" ? true : false;
 });
+
+const showModalRequest = () => {
+  setModalShow(true);
+  document.body.style.overflow = "hidden";
+};
 
 const isSaveRequest = () => {
   !JSON.parse(localStorage.getItem(props.value))
@@ -266,6 +290,9 @@ const showPassword = (e) => {
   }
   &__save-action {
     display: flex;
+    &_event-none .base-field__save-icon {
+      pointer-events: none;
+    }
   }
   &__save-icon {
     font-size: 26px;
@@ -308,7 +335,9 @@ const showPassword = (e) => {
     }
   }
   &_is-readonly {
-    background: #fafafa;
+    .base-field__control {
+      background: #fafafa;
+    }
   }
   &_is-center &__input {
     text-align: center;

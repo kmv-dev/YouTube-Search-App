@@ -85,12 +85,14 @@ const search = async () => {
   try {
     const isFormCorrect = await v.value.$validate();
     if (isFormCorrect) {
+      console.log("fdf");
       loading.value = true;
       await getYouTubeVideo(12, searchValue.value);
       await setSearchState(true, searchValue.value);
       loading.value = false;
       searchPageActive.value = true;
     } else {
+      console.log("ошиька");
       return;
     }
   } catch (e) {
