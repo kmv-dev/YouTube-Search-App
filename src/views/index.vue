@@ -40,7 +40,7 @@ const store = useStore();
 const searchValue = ref("");
 const nameButton = ref("Поиск");
 const loading = ref(false);
-const active = ref(false);
+const searchPageActive = ref(false);
 
 //getters
 const getYouTubeResponce = computed(() => store.getters.getSearchData);
@@ -55,7 +55,7 @@ const setSearchState = (searchStatus, searchValue) =>
 onMounted(() => {
   // проверяем состояние поиска и если он активный, то состояние страницы не изменяется, если нет, то сбрасыватся на начальное(при перезагрузке страницы например)
   if (getSearchState.value.searchStatus) {
-    active.value = true;
+    searchPageActive.value = true;
     searchValue.value = getSearchState.value.searchValue;
   }
 });
@@ -63,7 +63,7 @@ onMounted(() => {
 const activeClass = computed(() => {
   return [
     {
-      active: active.value,
+      active: searchPageActive.value,
     },
   ];
 });
@@ -89,7 +89,7 @@ const search = async () => {
       await getYouTubeVideo(12, searchValue.value);
       await setSearchState(true, searchValue.value);
       loading.value = false;
-      active.value = true;
+      searchPageActive.value = true;
     } else {
       return;
     }
