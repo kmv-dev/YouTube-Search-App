@@ -85,7 +85,6 @@ const closeDropdown = () => {
   isOptionVisible.value = false;
 };
 const selectOption = (i) => {
-  console.log("dddd", props.modelValue);
   emit("selected", i);
   isOptionVisible.value = false;
 };
