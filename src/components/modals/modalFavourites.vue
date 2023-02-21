@@ -3,18 +3,16 @@
     ><template v-slot:body>
       <form action="#" @submit.prevent="saveRequest" id="favourites">
         <BaseField
-          v-model:value="v.requestValue.$model"
+          v-model:value="getCurrentValue"
           class="modal-favourites__field"
           :isReadonly="readonly"
-          :error="v.requestValue.$errors"
           :placeholder="'Введите запрос'"
           :label="'Запрос'"
         ></BaseField>
         <BaseField
-          v-model:value="v.nameRequest.$model"
+          v-model:value="nameRequest"
           class="modal-favourites__field"
           isRequired
-          :error="v.nameRequest.$errors"
           :placeholder="'Укажите название'"
           :label="'Название'"
         ></BaseField>
@@ -24,7 +22,7 @@
           icon-class="icon-arrow"
           :options="options"
           :label="'Сортировать по'"
-          @select="isSelected()"
+          @selected="isSelected"
         />
         <div class="modal-favourites__range">
           <BaseRange v-model="rangeValue" :max="50" :min="1" />
@@ -40,8 +38,13 @@
         class="modal-favourites__button"
         :mode="'bordered'"
         @click="modalHide"
+        :type="'button'"
         >Не сохранять</BaseButton
-      ><BaseButton class="modal-favourites__button"
+      ><BaseButton
+        class="modal-favourites__button"
+        form="favourites"
+        :type="'submit'"
+        :disabled="nameRequest === ''"
         >Сохранить</BaseButton
       ></template
     ></BaseModal
@@ -51,12 +54,10 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
-import { required, helpers } from "@vuelidate/validators";
-import useVuelidate from "@vuelidate/core";
 const store = useStore();
 
 const props = defineProps({
-  searchValue: {
+  modelValue: {
     type: String,
     default: "",
   },
@@ -66,10 +67,18 @@ const props = defineProps({
   },
 });
 
-const requestValue = ref(props.searchValue);
 const nameRequest = ref("");
-const rangeValue = ref(20);
+const rangeValue = ref("12");
 const readonly = ref(!props.isEdit);
+const selected = ref(-1);
+const options = ref([
+  { label: "one", value: "1" },
+  { label: "two", value: "2" },
+]);
+
+const getCurrentValue = computed(() => {
+  return props.modelValue;
+});
 
 //getters
 const isModalShow = computed(() => store.getters.getShowModalStatus);
@@ -77,27 +86,16 @@ const isModalShow = computed(() => store.getters.getShowModalStatus);
 //action
 const setModalShow = (value) => store.dispatch("showModal", value);
 
-// правила валидации
-const rules = computed(() => ({
-  requestValue: {
-    required: helpers.withMessage("Поле не может быть пустым", required),
-  },
-  nameRequest: {
-    required: helpers.withMessage("Поле не может быть пустым", required),
-  },
-}));
-
-// инициализайия полей валидации
-const v = useVuelidate(rules, {
-  requestValue,
-  nameRequest,
-});
-
 const saveRequest = () => {
   console.log("save");
 };
 
+const isSelected = (i) => {
+  selected.value = i;
+};
+
 const modalHide = () => {
+  nameRequest.value = "";
   setModalShow(false);
 };
 </script>

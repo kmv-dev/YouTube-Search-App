@@ -1,6 +1,5 @@
 <template>
   <div class="videos">
-    <modalFavourites :searchValue="searchRequest" />
     <div class="videos__header header">
       <div class="header__info info">
         <span class="info__text"
@@ -67,7 +66,6 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import modalFavourites from "../modals/modalFavourites.vue";
 
 const modeVisible = ref(1);
 
