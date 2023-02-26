@@ -3,9 +3,17 @@ export const setLocalStorage = (localStorageKey, payload) => {
 
   const createItemObj = (arr) => {
     const itemObj = {};
-    itemObj.id = payload.id;
-    itemObj.userEmail = payload.userEmail;
-    itemObj.userPassword = payload.userPassword;
+    if (payload.value) {
+      itemObj.email = payload.email;
+      itemObj.searchValue = payload.value;
+      itemObj.requestName = payload.name;
+      itemObj.sortMethod = payload.sort;
+      itemObj.maxResult = payload.maxResult;
+    } else {
+      itemObj.id = payload.id;
+      itemObj.userEmail = payload.userEmail;
+      itemObj.userPassword = payload.userPassword;
+    }
     arr.push(itemObj);
   };
   createItemObj(data);

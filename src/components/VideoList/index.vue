@@ -165,9 +165,11 @@ const toggleModeVisible = () => {
       display: flex;
       justify-content: center;
       align-items: center;
+      max-width: 250px;
       border: 1px solid #1390e5;
       border-radius: 10px;
       overflow: hidden;
+      margin-bottom: 10px;
     }
     &__info {
       display: flex;

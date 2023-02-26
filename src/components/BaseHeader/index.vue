@@ -36,8 +36,8 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-
 const router = useRouter();
+
 const tabIndex = ref(0);
 
 const links = [
@@ -61,6 +61,7 @@ watch(
 onMounted(() => {
   isCheckActiveTab();
 });
+
 const currentLinkBorderPosition = computed(() => {
   return `left: ${tabIndex.value * 50}%;`;
 });
@@ -76,6 +77,7 @@ const setTabIndex = (index) => {
 };
 const logOut = () => {
   localStorage.removeItem("jwtToken");
+  localStorage.removeItem("userEmail");
   router.push("/sign-in");
 };
 </script>

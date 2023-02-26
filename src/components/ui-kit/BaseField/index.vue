@@ -17,7 +17,7 @@
       <div class="base-field__slot">
         <button>
           <span
-            v-if="type === 'password'"
+            v-if="isPassword"
             class="ui-kit__icon"
             :class="passwordFieldIcon"
             @click="showPassword"

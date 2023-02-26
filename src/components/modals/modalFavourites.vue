@@ -54,8 +54,10 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
+import { setLocalStorage } from "../../api/localStorageParser";
 const store = useStore();
 
+const emit = defineEmits(["save", "update"]);
 const props = defineProps({
   modelValue: {
     type: String,
@@ -71,9 +73,12 @@ const nameRequest = ref("");
 const rangeValue = ref("12");
 const readonly = ref(!props.isEdit);
 const selected = ref(-1);
+const sort = ref("relevance");
 const options = ref([
-  { label: "one", value: "1" },
-  { label: "two", value: "2" },
+  { label: "По дате", value: "date" },
+  { label: "По рейтингу", value: "rating" },
+  { label: "В алфавитном порядке", value: "title" },
+  { label: "По просмотрам", value: "viewCount" },
 ]);
 
 const getCurrentValue = computed(() => {
@@ -87,16 +92,28 @@ const isModalShow = computed(() => store.getters.getShowModalStatus);
 const setModalShow = (value) => store.dispatch("showModal", value);
 
 const saveRequest = () => {
-  console.log("save");
+  const payload = {
+    email: localStorage.getItem("userEmail"),
+    value: getCurrentValue.value,
+    name: nameRequest.value,
+    sort: sort.value,
+    maxResult: rangeValue.value,
+  };
+  setLocalStorage("saveRequests", payload);
+  emit("save");
+  emit("update");
+  modalHide();
 };
 
 const isSelected = (i) => {
   selected.value = i;
+  sort.value = options.value[i].value;
 };
 
 const modalHide = () => {
   nameRequest.value = "";
   setModalShow(false);
+  document.body.style.overflow = "auto";
 };
 </script>
 

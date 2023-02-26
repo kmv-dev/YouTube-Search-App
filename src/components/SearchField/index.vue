@@ -1,5 +1,9 @@
 <template>
-  <modalFavourites v-model="inputValue" />
+  <modalFavourites
+    v-model="inputValue"
+    @save="updateAfterSaved"
+    @update="checkAfterSaved"
+  />
   <div class="search" :class="activeClass">
     <div class="search__control">
       <form
@@ -19,17 +23,24 @@
         <div class="search__save-action" :class="iconSaveClass">
           <Transition>
             <button
-              v-if="inputValue && inputValue.length >= 3"
+              v-if="inputValue && inputValue.length >= 3 && showIcon"
               class="search__save-icon"
               type="button"
               :class="iconSave"
-              @click="showModalRequest"
+              @click="showModal"
             ></button>
           </Transition>
           <Transition>
-            <div v-if="isSave" class="search__tooltip tooltip">
+            <div
+              v-if="isSave && showIcon"
+              ref="tooltip"
+              class="search__tooltip tooltip"
+            >
               <p class="tooltip__text">Поиск сохранён в разделе «Избранное»</p>
-              <BaseButton :mode="'text'" class="tooltip__btn"
+              <BaseButton
+                :mode="'text'"
+                class="tooltip__btn"
+                @click="toFavouritesPage"
                 >Перейти в избранное</BaseButton
               >
             </div>
@@ -58,17 +69,20 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 import { required, helpers, minLength } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import modalFavourites from "../modals/modalFavourites.vue";
 
+const router = useRouter();
 const store = useStore();
-const props = defineProps({});
 const iconSave = ref("icon-like");
 const loading = ref(false);
 const inputValue = ref("");
+const saveData = ref(null);
+const showIcon = ref(false);
 
 //getters
 const getSearchState = computed(() => store.getters.getSearchState);
@@ -83,15 +97,21 @@ const setModalShow = (value) => store.dispatch("showModal", value);
 watch(
   () => inputValue.value,
   () => {
-    checkSaveRequest();
+    checkCurrentSearch();
+    checkSearchState();
   }
 );
+
+onMounted(() => {
+  updateAfterSaved();
+});
 
 // блокирую кнопку вызова модалки пока страница поиска не перешла в активное состояние
 const iconSaveClass = computed(() => {
   return [
     {
-      "search__save-action_event-none": !getSearchState.value.searchStatus,
+      "search__save-action_event-none":
+        !getSearchState.value.searchStatus || isSave.value,
     },
   ];
 });
@@ -122,6 +142,13 @@ const v = useVuelidate(rules, {
 });
 
 // methods
+
+const checkSearchState = () => {
+  getSearchState.value.searchStatus
+    ? (showIcon.value = true)
+    : (showIcon.value = false);
+};
+
 const search = async () => {
   try {
     const isFormCorrect = await v.value.$validate();
@@ -130,6 +157,7 @@ const search = async () => {
       await getYouTubeVideo(12, inputValue.value);
       await setSearchState(true, inputValue.value);
       loading.value = false;
+      checkSearchState();
     } else {
       console.log("форма не корректна");
       return;
@@ -139,30 +167,34 @@ const search = async () => {
   }
 };
 
-const showModalRequest = () => {
+const updateAfterSaved = () => {
+  saveData.value = JSON.parse(localStorage.getItem("saveRequests"));
+};
+const checkAfterSaved = () => {
+  updateAfterSaved();
+  checkCurrentSearch();
+};
+
+const checkCurrentSearch = async () => {
+  // проверяем есть ли у нас поисковый запрос в сохраненных данных для конкретного юзера
+  // и отрисовываем соответствующую иконку с тултипом
+  const saved = await saveData.value.filter(
+    (el) =>
+      el.searchValue === inputValue.value &&
+      el.email === localStorage.getItem("userEmail")
+  );
+  saved[0]
+    ? (iconSave.value = "icon-like-active")
+    : (iconSave.value = "icon-like");
+};
+
+const showModal = () => {
   setModalShow(true);
   document.body.style.overflow = "hidden";
 };
 
-const checkSaveRequest = () => {
-  !JSON.parse(localStorage.getItem(inputValue.value))
-    ? (iconSave.value = "icon-like")
-    : (iconSave.value = "icon-like-active");
-};
-const getSaveData = () => {
-  if (JSON.parse(localStorage.getItem(inputValue.value))) {
-    iconSave.value = "icon-like-active";
-  }
-  if (JSON.parse(localStorage.getItem(inputValue.value))) {
-    iconSave.value = "icon-like";
-    localStorage.removeItem(inputValue.value);
-  } else if (!JSON.parse(localStorage.getItem(inputValue.value))) {
-    iconSave.value = "icon-like-active";
-    localStorage.setItem(inputValue.value, JSON.stringify(inputValue.value));
-  }
-  if (!JSON.parse(localStorage.getItem(inputValue.value))) {
-    iconSave.value = "icon-like";
-  }
+const toFavouritesPage = () => {
+  router.push("/favourites");
 };
 </script>
 
@@ -222,15 +254,10 @@ const getSaveData = () => {
       }
     }
   }
-  &_like-position {
-    .search__tooltip {
-      right: 50px;
-    }
-  }
   &__tooltip {
     position: absolute;
     bottom: -116px;
-    right: -125px;
+    right: 50px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -286,47 +313,6 @@ const getSaveData = () => {
     font-size: 12px;
     color: #fff;
     padding: 2px 10px;
-  }
-  &_is-search {
-    .search {
-      &__label {
-        display: block;
-        font-size: 28px;
-        margin-bottom: 12px;
-      }
-      &__control {
-        height: 52px;
-        padding: 0 16px 0 16px;
-        background: #ffffff;
-      }
-    }
-  }
-  &_is-password {
-    &:focus-within {
-      .ui-kit {
-        &__icon {
-          &::before {
-            color: #1390e5;
-          }
-        }
-      }
-    }
-  }
-  &_is-readonly {
-    .search__control {
-      background: #fafafa;
-    }
-  }
-  &_is-center &__input {
-    text-align: center;
-  }
-  &_is-center {
-    min-width: 100px;
-  }
-  &_not-save-value {
-    .icon-like-active {
-      pointer-events: none;
-    }
   }
   @include _380 {
     font-size: 14px;

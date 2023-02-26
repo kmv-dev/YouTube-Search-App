@@ -13,6 +13,7 @@
         <BaseField
           v-model:value="v.userPassword.$model"
           class="sign-up__field"
+          isPassword
           :error="v.userPassword.$errors"
           :type="passwordType"
           :placeholder="'Введите пароль'"
@@ -22,6 +23,7 @@
         <BaseField
           v-model:value="v.userConfirmPassword.$model"
           class="sign-up__field"
+          isPassword
           :error="v.userConfirmPassword.$errors"
           :type="confirmPasswordType"
           :placeholder="'Введите пароль'"

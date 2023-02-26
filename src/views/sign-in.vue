@@ -12,6 +12,7 @@
         <BaseField
           v-model:value="v.userPassword.$model"
           class="sign-in__field"
+          isPassword
           :error="v.userPassword.$errors"
           :type="passwordType"
           :placeholder="'Введите пароль'"
@@ -44,8 +45,9 @@ const router = useRouter();
 const store = useStore();
 
 // store actions
-const logInAction = (email, isAuth) =>
-  store.dispatch("addUser", { email, isAuth });
+const setSearchState = (searchStatus, searchValue) =>
+  store.dispatch("addSearchState", { searchStatus, searchValue });
+const logInAction = (isAuth) => store.dispatch("addUser", { isAuth });
 
 const userEmail = ref("");
 const userPassword = ref("");
@@ -89,9 +91,11 @@ const userSignIn = async () => {
   try {
     const isFormCorrect = await v.value.$validate();
     if (isFormCorrect) {
-      await logInAction(userEmail.value, true);
+      await logInAction(true);
       csrfToken();
       toHomePage();
+      setSearchState(false, "");
+      localStorage.setItem("userEmail", userEmail.value);
     } else {
       return;
     }

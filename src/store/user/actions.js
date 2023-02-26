@@ -1,6 +1,6 @@
 export default {
-  addUser({ commit }, { email, isAuth }) {
-    commit("setUserData", { email, isAuth });
+  addUser({ commit }, isAuth) {
+    commit("setUserData", isAuth);
   },
   setAuth({ commit }, { isAuth }) {
     commit("setAuth", { isAuth });

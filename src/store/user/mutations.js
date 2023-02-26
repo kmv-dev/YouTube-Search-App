@@ -1,6 +1,5 @@
 export default {
-  setUserData(state, { email, isAuth }) {
-    state.user.email = email;
+  setUserData(state, isAuth) {
     state.user.isAuth = isAuth;
   },
   setAuth(state, { isAuth }) {
