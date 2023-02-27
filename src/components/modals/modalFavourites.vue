@@ -76,11 +76,19 @@ const selected = ref(-1);
 const sort = ref("relevance");
 const requestId = ref(null);
 const options = ref([
+  { label: "Без сортировки", value: "relevance" },
   { label: "По дате", value: "date" },
   { label: "По рейтингу", value: "rating" },
   { label: "В алфавитном порядке", value: "title" },
   { label: "По просмотрам", value: "viewCount" },
 ]);
+
+//getters
+const isModalShow = computed(() => store.getters.getShowModalStatus);
+const savedData = computed(() => store.getters.getModalData);
+
+//action
+const setModalShow = (value) => store.dispatch("showModal", value);
 
 const getCurrentValue = computed(() => {
   return props.modelValue;
@@ -97,10 +105,6 @@ const checkReadonly = computed(() => {
     return true;
   }
 });
-
-//getters
-const isModalShow = computed(() => store.getters.getShowModalStatus);
-const savedData = computed(() => store.getters.getModalData);
 
 watch(
   () => isModalShow.value,
@@ -121,9 +125,6 @@ watch(
   }
 );
 
-//action
-const setModalShow = (value) => store.dispatch("showModal", value);
-
 const saveRequest = () => {
   const payload = {};
   if (props.isEdit) {
@@ -138,11 +139,12 @@ const saveRequest = () => {
   payload.maxResult = rangeValue.value;
   if (!props.isEdit) {
     setLocalStorage("saveRequests", payload);
+    emit("save");
+    emit("update");
   } else {
     editSavedData(payload);
+    emit("save");
   }
-  emit("save");
-  emit("update");
   modalHide();
 };
 
@@ -153,7 +155,7 @@ const isSelected = (i) => {
 
 const modalHide = () => {
   nameRequest.value = "";
-  sort.value = "relevance";
+  selected.value = -1;
   setModalShow(false);
   document.body.style.overflow = "auto";
 };

@@ -137,6 +137,7 @@ const toggleDropdown = () => {
   }
   &__wrapper {
     overflow-y: auto;
+    max-height: 170px;
   }
   &__items {
     position: absolute;

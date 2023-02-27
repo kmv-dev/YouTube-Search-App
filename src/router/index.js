@@ -51,6 +51,7 @@ router.beforeEach(async (to) => {
     } else {
       const setAuthStatus = (isAuth) => store.dispatch("setAuth", { isAuth });
       setAuthStatus(false);
+      localStorage.removeItem("userEmail");
     }
     const auth = await store.getters.getAuthStatus;
     if (to.meta.auth && !auth) {
