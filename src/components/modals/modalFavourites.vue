@@ -1,7 +1,6 @@
 <template>
   <BaseModal :title="'Сохранить запрос'" v-model:isShow="isModalShow" isShadow
     ><template v-slot:body>
-      {{ inputValue }}
       <form action="#" @submit.prevent="saveRequest" id="favourites">
         <BaseField
           v-model:value="inputValue"
