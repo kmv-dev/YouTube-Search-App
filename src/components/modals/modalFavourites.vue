@@ -3,9 +3,9 @@
     ><template v-slot:body>
       <form action="#" @submit.prevent="saveRequest" id="favourites">
         <BaseField
-          v-model:value="getCurrentValue"
+          v-model:value="inputValue"
           class="modal-favourites__field"
-          :isReadonly="readonly"
+          :isReadonly="checkReadonly"
           :placeholder="'Введите запрос'"
           :label="'Запрос'"
         ></BaseField>
@@ -45,16 +45,16 @@
         form="favourites"
         :type="'submit'"
         :disabled="nameRequest === ''"
-        >Сохранить</BaseButton
-      ></template
-    ></BaseModal
-  >
+        :name="btnName"
+      ></BaseButton></template
+  ></BaseModal>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useStore } from "vuex";
-import { setLocalStorage } from "../../api/localStorageParser";
+import { getRandomId } from "../../utils/idGenerator";
+import { setLocalStorage, editSavedData } from "../../api/localStorageParser";
 const store = useStore();
 
 const emit = defineEmits(["save", "update"]);
@@ -69,11 +69,12 @@ const props = defineProps({
   },
 });
 
+const inputValue = ref("");
 const nameRequest = ref("");
 const rangeValue = ref("12");
-const readonly = ref(!props.isEdit);
 const selected = ref(-1);
 const sort = ref("relevance");
+const requestId = ref(null);
 const options = ref([
   { label: "По дате", value: "date" },
   { label: "По рейтингу", value: "rating" },
@@ -85,21 +86,61 @@ const getCurrentValue = computed(() => {
   return props.modelValue;
 });
 
+const btnName = computed(() => {
+  return !props.isEdit ? "Сохранить" : "Изменить";
+});
+
+const checkReadonly = computed(() => {
+  if (props.isEdit) {
+    return false;
+  } else {
+    return true;
+  }
+});
+
 //getters
 const isModalShow = computed(() => store.getters.getShowModalStatus);
+const savedData = computed(() => store.getters.getModalData);
+
+watch(
+  () => isModalShow.value,
+  () => {
+    if (!props.isEdit) {
+      inputValue.value = getCurrentValue.value;
+      nameRequest.value = "";
+      rangeValue.value = "12";
+      sort.value = -1;
+    } else {
+      inputValue.value = savedData.value.searchValue;
+      nameRequest.value = savedData.value.requestName;
+      rangeValue.value = savedData.value.maxResult;
+      sort.value = savedData.value.sortMethod;
+      requestId.value = savedData.value.requestId;
+      selected.value = savedData.value.sortMethod;
+    }
+  }
+);
 
 //action
 const setModalShow = (value) => store.dispatch("showModal", value);
 
 const saveRequest = () => {
-  const payload = {
-    email: localStorage.getItem("userEmail"),
-    value: getCurrentValue.value,
-    name: nameRequest.value,
-    sort: sort.value,
-    maxResult: rangeValue.value,
-  };
-  setLocalStorage("saveRequests", payload);
+  const payload = {};
+  if (props.isEdit) {
+    payload.requestId = requestId.value;
+  } else {
+    payload.requestId = getRandomId(0, 89755738883);
+  }
+  payload.email = localStorage.getItem("userEmail");
+  payload.value = inputValue.value;
+  payload.name = nameRequest.value;
+  payload.sort = sort.value;
+  payload.maxResult = rangeValue.value;
+  if (!props.isEdit) {
+    setLocalStorage("saveRequests", payload);
+  } else {
+    editSavedData(payload);
+  }
   emit("save");
   emit("update");
   modalHide();
@@ -107,11 +148,12 @@ const saveRequest = () => {
 
 const isSelected = (i) => {
   selected.value = i;
-  sort.value = options.value[i].value;
+  sort.value = i;
 };
 
 const modalHide = () => {
   nameRequest.value = "";
+  sort.value = "relevance";
   setModalShow(false);
   document.body.style.overflow = "auto";
 };

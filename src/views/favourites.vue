@@ -2,7 +2,7 @@
   <div class="favourites">
     <div class="favourites__inner">
       <h1 class="favourites__title">Избранное</h1>
-      <FavouritesList :savedRequests="requests" />
+      <FavouritesList :savedRequests="requests" @update="updateList" />
     </div>
   </div>
 </template>
@@ -14,11 +14,20 @@ import FavouritesList from "../components/FavouritesList/index.vue";
 const requests = ref([]);
 
 onMounted(async () => {
-  requests.value = await JSON.parse(localStorage.getItem("saveRequests"));
-  requests.value = requests.value.filter(
-    (el) => el.email === localStorage.getItem("userEmail")
-  );
+  requests.value =
+    (await JSON.parse(localStorage.getItem("saveRequests"))) || [];
+  if (requests.value) {
+    requests.value = requests.value.filter(
+      (el) => el.email === localStorage.getItem("userEmail")
+    );
+  }
+  requests.value.reverse();
 });
+
+const updateList = async () => {
+  requests.value = await JSON.parse(localStorage.getItem("saveRequests"));
+  requests.value.reverse();
+};
 </script>
 
 <style lang="scss" scoped>

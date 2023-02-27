@@ -1,5 +1,8 @@
 <template>
-  <ModalSuccesSignIn :isShow="isValidate"></ModalSuccesSignIn>
+  <ModalSucces
+    :isShow="isValidate"
+    :title="'Успешная регистрация'"
+  ></ModalSucces>
   <BaseModal :isShow="!isValidate" :title="'Регистрация'" isLogo
     ><template v-slot:body>
       <form action="#" @submit.prevent="userSignUp" id="signup">
@@ -58,7 +61,7 @@ import {
   minLength,
   sameAs,
 } from "@vuelidate/validators";
-import ModalSuccesSignIn from "../components/modals/modalSuccesSignIn.vue";
+import ModalSucces from "../components/modals/modalSucces.vue";
 import { setLocalStorage } from "../api/localStorageParser";
 import { getRandomId } from "../utils/idGenerator";
 

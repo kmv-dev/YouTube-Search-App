@@ -178,14 +178,16 @@ const checkAfterSaved = () => {
 const checkCurrentSearch = async () => {
   // проверяем есть ли у нас поисковый запрос в сохраненных данных для конкретного юзера
   // и отрисовываем соответствующую иконку с тултипом
-  const saved = await saveData.value.filter(
-    (el) =>
-      el.searchValue === inputValue.value &&
-      el.email === localStorage.getItem("userEmail")
-  );
-  saved[0]
-    ? (iconSave.value = "icon-like-active")
-    : (iconSave.value = "icon-like");
+  if (saveData.value) {
+    const saved = await saveData.value.filter(
+      (el) =>
+        el.searchValue === inputValue.value &&
+        el.email === localStorage.getItem("userEmail")
+    );
+    saved[0]
+      ? (iconSave.value = "icon-like-active")
+      : (iconSave.value = "icon-like");
+  }
 };
 
 const showModal = () => {

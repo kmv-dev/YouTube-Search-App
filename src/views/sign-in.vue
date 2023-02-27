@@ -1,5 +1,6 @@
 <template>
-  <BaseModal :isShow="true" :title="'Вход'" isLogo
+  <ModalSucces :isShow="isValidate" :title="'Добро пожаловать!'"></ModalSucces>
+  <BaseModal :isShow="!isValidate" :title="'Вход'" isLogo
     ><template v-slot:body>
       <form action="#" @submit.prevent="userSignIn" id="signin">
         <BaseField
@@ -39,10 +40,12 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { required, email, helpers } from "@vuelidate/validators";
 import { csrfToken } from "../utils/csrfTokenGenerator";
+import ModalSucces from "../components/modals/modalSucces.vue";
 import useVuelidate from "@vuelidate/core";
 
 const router = useRouter();
 const store = useStore();
+const isValidate = ref(false);
 
 // store actions
 const setSearchState = (searchStatus, searchValue) =>
@@ -92,6 +95,10 @@ const userSignIn = async () => {
     const isFormCorrect = await v.value.$validate();
     if (isFormCorrect) {
       await logInAction(true);
+      isValidate.value = true; // активация модалки при успешном прохождении валидации формы
+      await new Promise((resolve) =>
+        setTimeout(() => resolve(console.log("login is succes!")), 2000)
+      ); // эмитация задержки ответа от сервера статус ок 200
       csrfToken();
       toHomePage();
       setSearchState(false, "");

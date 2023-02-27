@@ -4,6 +4,7 @@ export const setLocalStorage = (localStorageKey, payload) => {
   const createItemObj = (arr) => {
     const itemObj = {};
     if (payload.value) {
+      itemObj.requestId = payload.requestId;
       itemObj.email = payload.email;
       itemObj.searchValue = payload.value;
       itemObj.requestName = payload.name;
@@ -18,4 +19,19 @@ export const setLocalStorage = (localStorageKey, payload) => {
   };
   createItemObj(data);
   localStorage.setItem(localStorageKey, JSON.stringify(data));
+};
+
+export const editSavedData = (payload) => {
+  const requestArray = JSON.parse(localStorage.getItem("saveRequests"));
+  requestArray.map((obj) => {
+    if (obj.requestId === payload.requestId) {
+      obj.requestId = payload.requestId;
+      obj.email = payload.email;
+      obj.searchValue = payload.value;
+      obj.requestName = payload.name;
+      obj.sortMethod = payload.sort;
+      obj.maxResult = payload.maxResult;
+    }
+  });
+  localStorage.setItem("saveRequests", JSON.stringify(requestArray));
 };

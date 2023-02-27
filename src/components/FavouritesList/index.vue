@@ -1,7 +1,10 @@
 <template>
+  <modalFavourites isEdit @save="updateData" />
   <div class="favourite-list">
+    <span v-if="!savedRequests[0]">К сожалению тут ничего нет</span>
     <div
-      v-for="item in savedRequests"
+      v-else
+      v-for="(item, index) in savedRequests"
       class="favourite-list__item item"
       :key="item.searchValue"
     >
@@ -11,7 +14,7 @@
       <div class="item__action">
         <button
           class="item__button item__button_edit"
-          @click="testEdit"
+          @click="showModal(index)"
         ></button>
         <button
           class="item__button item__button_delete"
@@ -23,6 +26,14 @@
 </template>
 
 <script setup>
+import { ref, computed } from "vue";
+import { useStore } from "vuex";
+import modalFavourites from "../modals/modalFavourites.vue";
+
+const store = useStore();
+const currentRequest = ref(0);
+
+const emit = defineEmits(["update"]);
 const props = defineProps({
   savedRequests: {
     type: Array,
@@ -30,16 +41,39 @@ const props = defineProps({
   },
 });
 
+const setStateModalData = (payload) =>
+  store.dispatch("addModalDataToState", payload);
+
+const getSavedValue = computed(() => {
+  return props.savedRequests[currentRequest.value];
+});
+
+const setModalShow = (value) => store.dispatch("showModal", value);
+
 const testRoute = () => {
   console.log("redirect");
 };
 
-const testEdit = () => {
-  console.log("edit");
-};
-
 const testDelete = () => {
   console.log("delete");
+};
+
+const updateData = () => {
+  emit("update");
+};
+
+const showModal = async (index) => {
+  currentRequest.value = index;
+  const payload = {
+    requestId: getSavedValue.value.requestId,
+    searchValue: getSavedValue.value.searchValue,
+    requestName: getSavedValue.value.requestName,
+    sortMethod: getSavedValue.value.sortMethod,
+    maxResult: getSavedValue.value.maxResult,
+  };
+  await setStateModalData(payload);
+  setModalShow(true);
+  document.body.style.overflow = "hidden";
 };
 </script>
 
