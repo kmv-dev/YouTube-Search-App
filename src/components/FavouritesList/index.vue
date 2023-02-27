@@ -6,7 +6,7 @@
       <div
         v-for="(item, index) in savedRequests"
         class="favourite-list__item item"
-        :key="item.searchValue"
+        :key="item.requestId"
       >
         <div class="item__inner" @click="testRoute">
           <span class="item__title">{{ item.requestName }}</span>
@@ -18,7 +18,7 @@
           ></button>
           <button
             class="item__button item__button_delete"
-            @click="deleteRequest"
+            @click="deleteRequest(item.requestId)"
           ></button>
         </div>
       </div>
@@ -56,8 +56,8 @@ const testRoute = () => {
   console.log("redirect");
 };
 
-const deleteRequest = () => {
-  removeSavedRequest("saveRequests", getSavedValue.value.requestId);
+const deleteRequest = (id) => {
+  removeSavedRequest("saveRequests", id);
   updateData();
 };
 
@@ -82,6 +82,7 @@ const showModal = async (index) => {
 
 <style lang="scss" scoped>
 .favourite-list {
+  position: relative;
   margin-bottom: 50px;
   .item {
     display: flex;
