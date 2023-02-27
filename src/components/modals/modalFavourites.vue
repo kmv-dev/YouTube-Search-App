@@ -1,11 +1,13 @@
 <template>
   <BaseModal :title="'Сохранить запрос'" v-model:isShow="isModalShow" isShadow
     ><template v-slot:body>
+      {{ inputValue }}
       <form action="#" @submit.prevent="saveRequest" id="favourites">
         <BaseField
           v-model:value="inputValue"
           class="modal-favourites__field"
           :isReadonly="checkReadonly"
+          :isRequired="!checkReadonly"
           :placeholder="'Введите запрос'"
           :label="'Запрос'"
         ></BaseField>
@@ -44,7 +46,7 @@
         class="modal-favourites__button"
         form="favourites"
         :type="'submit'"
-        :disabled="nameRequest === ''"
+        :disabled="checkValidate"
         :name="btnName"
       ></BaseButton></template
   ></BaseModal>
@@ -92,6 +94,14 @@ const setModalShow = (value) => store.dispatch("showModal", value);
 
 const getCurrentValue = computed(() => {
   return props.modelValue;
+});
+
+const checkValidate = computed(() => {
+  if (nameRequest.value === "" || inputValue.value === "") {
+    return true;
+  } else {
+    return false;
+  }
 });
 
 const btnName = computed(() => {
@@ -142,7 +152,7 @@ const saveRequest = () => {
     emit("save");
     emit("update");
   } else {
-    editSavedData(payload);
+    editSavedData("saveRequests", payload);
     emit("save");
   }
   modalHide();

@@ -21,8 +21,8 @@ export const setLocalStorage = (localStorageKey, payload) => {
   localStorage.setItem(localStorageKey, JSON.stringify(data));
 };
 
-export const editSavedData = (payload) => {
-  const requestArray = JSON.parse(localStorage.getItem("saveRequests"));
+export const editSavedData = (localStorageKey, payload) => {
+  const requestArray = JSON.parse(localStorage.getItem(localStorageKey));
   requestArray.map((obj) => {
     if (obj.requestId === payload.requestId) {
       obj.requestId = payload.requestId;
@@ -34,4 +34,10 @@ export const editSavedData = (payload) => {
     }
   });
   localStorage.setItem("saveRequests", JSON.stringify(requestArray));
+};
+
+export const removeSavedRequest = (localStorageKey, id) => {
+  const requestArray = JSON.parse(localStorage.getItem(localStorageKey));
+  const newList = requestArray.filter((obj) => obj.requestId !== id);
+  localStorage.setItem(localStorageKey, JSON.stringify(newList));
 };

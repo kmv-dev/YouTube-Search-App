@@ -2,32 +2,34 @@
   <modalFavourites isEdit @save="updateData" />
   <div class="favourite-list">
     <span v-if="!savedRequests[0]">К сожалению тут ничего нет</span>
-    <div
-      v-else
-      v-for="(item, index) in savedRequests"
-      class="favourite-list__item item"
-      :key="item.searchValue"
-    >
-      <div class="item__inner" @click="testRoute">
-        <span class="item__title">{{ item.requestName }}</span>
+    <TransitionGroup v-else name="list">
+      <div
+        v-for="(item, index) in savedRequests"
+        class="favourite-list__item item"
+        :key="item.searchValue"
+      >
+        <div class="item__inner" @click="testRoute">
+          <span class="item__title">{{ item.requestName }}</span>
+        </div>
+        <div class="item__action">
+          <button
+            class="item__button item__button_edit"
+            @click="showModal(index)"
+          ></button>
+          <button
+            class="item__button item__button_delete"
+            @click="deleteRequest"
+          ></button>
+        </div>
       </div>
-      <div class="item__action">
-        <button
-          class="item__button item__button_edit"
-          @click="showModal(index)"
-        ></button>
-        <button
-          class="item__button item__button_delete"
-          @click="testDelete"
-        ></button>
-      </div>
-    </div>
+    </TransitionGroup>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
+import { removeSavedRequest } from "../../api/localStorageParser";
 import modalFavourites from "../modals/modalFavourites.vue";
 
 const store = useStore();
@@ -54,8 +56,9 @@ const testRoute = () => {
   console.log("redirect");
 };
 
-const testDelete = () => {
-  console.log("delete");
+const deleteRequest = () => {
+  removeSavedRequest("saveRequests", getSavedValue.value.requestId);
+  updateData();
 };
 
 const updateData = () => {
