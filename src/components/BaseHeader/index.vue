@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="header__inner">
-      <a class="header__logo" href="https://sibdev.pro/">
+      <a class="header__logo" href="https://sibdev.pro/" target="_blank">
         <img
           class="header__logo-img"
           src="@/assets/img/sibdev-logo.svg"
@@ -34,12 +34,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
+const store = useStore();
 const router = useRouter();
 const tabIndex = ref(0);
-
 const links = [
   {
     title: "Поиск",
@@ -47,23 +48,43 @@ const links = [
   },
   {
     title: "Избранное",
-    to: "/ui-kit",
+    to: "/favourites",
   },
 ];
+
+watch(
+  () => router.currentRoute.value.fullPath,
+  () => {
+    isCheckActiveTab();
+  }
+);
+
 onMounted(() => {
-  router.currentRoute.value.fullPath === "/favourites"
-    ? (tabIndex.value = 1)
-    : (tabIndex.value = 0);
+  isCheckActiveTab();
 });
+
+// actions сброс состояния клика после переходов из сохраненных запросов
+const resetStateRedirectFromFavouritesPage = (reset) =>
+  store.dispatch("resetStateIsClick", reset);
+
 const currentLinkBorderPosition = computed(() => {
   return `left: ${tabIndex.value * 50}%;`;
 });
 
+const isCheckActiveTab = () => {
+  router.currentRoute.value.fullPath === "/favourites"
+    ? (tabIndex.value = 1)
+    : (tabIndex.value = 0);
+};
+
 const setTabIndex = (index) => {
   tabIndex.value = index;
+  resetStateRedirectFromFavouritesPage(false);
 };
 const logOut = () => {
-  console.log("вышел");
+  localStorage.removeItem("jwtToken");
+  localStorage.removeItem("userEmail");
+  router.push("/sign-in");
 };
 </script>
 
@@ -76,6 +97,9 @@ const logOut = () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+  &__logo {
+    margin-left: -10px;
   }
   .nav-bar {
     width: 100%;

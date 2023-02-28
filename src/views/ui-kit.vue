@@ -1,6 +1,11 @@
 <template>
   <div class="ui-kit">
-    <BaseModal v-model:isShow="showModal" :title="'Вход'" isCloseActive isLogo
+    <BaseModal
+      v-model:isShow="showModal"
+      isCloseActive
+      isLogo
+      isShadow
+      :title="'Вход'"
       ><template v-slot:body>
         <BaseField
           class="ui-kit__base-field"
@@ -34,37 +39,36 @@
       </div>
       <div class="ui-kit__box">
         <BaseField
+          v-model:value="v.emailField.$model"
           :label="'isLabel'"
           :type="'email'"
           :placeholder="'emeil'"
-          v-model:value="v.emailField.$model"
           :error="v.emailField.$errors"
         ></BaseField>
       </div>
       <div class="ui-kit__box">
         <BaseField
+          v-model:value="v.passwordValue.$model"
+          isPassword
           :label="'isPassword'"
           :type="passwordType"
           :placeholder="'password'"
-          isPassword
-          @showPassword="togglePasswordType()"
-          v-model:value="v.passwordValue.$model"
           :error="v.passwordValue.$errors"
+          @showPassword="togglePasswordType()"
         ></BaseField>
       </div>
       <div class="ui-kit__box">
         <BaseField
-          :placeholder="'поиск'"
-          isSearchField
           v-model:value="v.searchValue.$model"
+          :placeholder="'поиск'"
           :error="v.searchValue.$errors"
         ></BaseField>
       </div>
       <div class="ui-kit__box">
         <BaseDropdown
           v-model="selected"
-          :options="options"
           icon-class="icon-arrow"
+          :options="options"
           :label="'Сортировать по'"
           @select="isSelected()"
         />

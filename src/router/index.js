@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import store from "../store";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
     {
       path: "/",
@@ -42,15 +42,27 @@ const router = createRouter({
     },
   ],
 });
-
+// проверка авторизации user
 router.beforeEach(async (to) => {
-  const auth = await store.getters.getAuthStatus;
-  if (to.meta.auth && !auth) {
-    return { name: "sign-in" };
-  } else if (!to.meta.auth && auth) {
-    return { name: "home" };
-  } else {
-    return;
+  try {
+    if (localStorage.getItem("jwtToken")) {
+      const setAuthStatus = (isAuth) => store.dispatch("setAuth", { isAuth });
+      setAuthStatus(true);
+    } else {
+      const setAuthStatus = (isAuth) => store.dispatch("setAuth", { isAuth });
+      setAuthStatus(false);
+      localStorage.removeItem("userEmail");
+    }
+    const auth = await store.getters.getAuthStatus;
+    if (to.meta.auth && !auth) {
+      return { name: "sign-in" };
+    } else if (!to.meta.auth && auth) {
+      return { name: "home" };
+    } else {
+      return;
+    }
+  } catch (e) {
+    console.log(e);
   }
 });
 

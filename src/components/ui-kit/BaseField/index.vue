@@ -15,10 +15,6 @@
         @input="updateValue"
       />
       <div class="base-field__slot">
-        <div
-          v-if="!value && isSearchField"
-          class="base-field__save-icon_disabled"
-        ></div>
         <button>
           <span
             v-if="isPassword"
@@ -27,28 +23,7 @@
             @click="showPassword"
           ></span>
         </button>
-        <div class="base-field__save-action">
-          <Transition>
-            <button
-              v-if="value && isSearchField"
-              class="base-field__save-icon"
-              :class="iconSave"
-              @click="getSaveData"
-            ></button>
-          </Transition>
-          <Transition>
-            <div
-              v-if="isSearchField && isSave"
-              class="base-field__tooltip tooltip"
-            >
-              <p class="tooltip__text">Поиск сохранён в разделе «Избранное»</p>
-              <BaseButton :mode="'text'" class="tooltip__btn"
-                >Перейти в избранное</BaseButton
-              >
-            </div>
-          </Transition>
-          <slot name="button"></slot>
-        </div>
+        <slot name="button"></slot>
       </div>
     </div>
     <TransitionGroup>
@@ -60,7 +35,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { computed } from "vue";
+
 const emit = defineEmits(["update:value", "showPassword"]);
 const props = defineProps({
   value: {
@@ -99,68 +75,26 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isSearchField: {
-    type: Boolean,
-    default: false,
-  },
-  isSearchFieldBtn: {
-    type: Boolean,
-    default: false,
-  },
   isRequired: {
     type: Boolean,
     default: false,
   },
 });
 
-const iconSave = ref("icon-like");
-
-watch(
-  () => props.value,
-  () => {
-    isSaveRequest();
-  }
-);
-
 const fieldClass = computed(() => {
   return [
     {
-      "base-field_is-search": props.isSearchField,
       "base-field_is-readonly": props.isReadonly,
-      "base-field_is-password": props.isPassword,
+      "base-field_is-password": props.type === "password",
       "base-field_is-center": props.isTextCenter,
-      "base-field_like-position": props.isSearchFieldBtn,
-      "base-field_not-save-value": iconSave.value,
     },
   ];
 });
+
 const passwordFieldIcon = computed(() => {
   return props.type === "password" ? "icon-eye-off" : "icon-eye";
 });
-const isSave = computed(() => {
-  return iconSave.value === "icon-like-active" ? true : false;
-});
 
-const isSaveRequest = () => {
-  !JSON.parse(localStorage.getItem(props.value))
-    ? (iconSave.value = "icon-like")
-    : (iconSave.value = "icon-like-active");
-};
-const getSaveData = () => {
-  if (JSON.parse(localStorage.getItem(props.value))) {
-    iconSave.value = "icon-like-active";
-  }
-  if (JSON.parse(localStorage.getItem(props.value))) {
-    iconSave.value = "icon-like";
-    localStorage.removeItem(props.value);
-  } else if (!JSON.parse(localStorage.getItem(props.value))) {
-    iconSave.value = "icon-like-active";
-    localStorage.setItem(props.value, JSON.stringify(props.value));
-  }
-  if (!JSON.parse(localStorage.getItem(props.value))) {
-    iconSave.value = "icon-like";
-  }
-};
 const updateValue = (e) => {
   emit("update:value", e.target.value);
 };
@@ -224,60 +158,6 @@ const showPassword = (e) => {
       }
     }
   }
-  &_like-position {
-    .base-field__tooltip {
-      right: 50px;
-    }
-  }
-  &__tooltip {
-    position: absolute;
-    bottom: -116px;
-    right: -125px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    background: #ffffff;
-    padding: 15px;
-    max-width: 230px;
-    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
-    border-radius: 10px;
-    z-index: 1000;
-    font-size: 16px;
-    :before,
-    :after {
-      content: "";
-      position: absolute;
-      left: 66px;
-      top: -20px;
-      border: 10px solid transparent;
-      border-bottom: 10px solid rgba(23, 23, 25, 0.1);
-      z-index: 1;
-      pointer-events: none;
-    }
-    :after {
-      border-bottom: 10px solid white;
-      top: -19px;
-      z-index: 2;
-    }
-    .tooltip {
-      &__text {
-        color: rgba(39, 39, 39, 0.3);
-      }
-      &__btn {
-        font-size: 16px;
-      }
-    }
-  }
-  &__save-action {
-    display: flex;
-  }
-  &__save-icon {
-    font-size: 26px;
-    &_disabled {
-      height: 25px;
-      width: 26px;
-    }
-  }
   &__error {
     background: #ff647c;
     margin-top: 2px;
@@ -285,20 +165,6 @@ const showPassword = (e) => {
     font-size: 12px;
     color: #fff;
     padding: 2px 10px;
-  }
-  &_is-search {
-    .base-field {
-      &__label {
-        display: block;
-        font-size: 28px;
-        margin-bottom: 12px;
-      }
-      &__control {
-        height: 52px;
-        padding: 0 16px 0 16px;
-        background: #ffffff;
-      }
-    }
   }
   &_is-password {
     &:focus-within {
@@ -312,18 +178,15 @@ const showPassword = (e) => {
     }
   }
   &_is-readonly {
-    background: #fafafa;
+    .base-field__control {
+      background: #fafafa;
+    }
   }
   &_is-center &__input {
     text-align: center;
   }
   &_is-center {
     min-width: 100px;
-  }
-  &_not-save-value {
-    .icon-like-active {
-      pointer-events: none;
-    }
   }
   @include _380 {
     font-size: 14px;

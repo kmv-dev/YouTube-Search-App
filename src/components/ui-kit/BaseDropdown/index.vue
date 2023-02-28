@@ -20,7 +20,7 @@
       <div class="base-dropdown__wrapper">
         <div
           v-for="(option, i) in options"
-          :key="`base-dropdown__item_${i}`"
+          :key="option.label"
           class="base-dropdown__item item"
           @click="selectOption(i)"
         >
@@ -39,7 +39,7 @@
 import { ref, computed } from "vue";
 import { directive as vClickOutside } from "click-outside-vue3";
 
-const emit = defineEmits(["select"]);
+const emit = defineEmits(["selected"]);
 const props = defineProps({
   modelValue: {
     type: Number,
@@ -85,7 +85,7 @@ const closeDropdown = () => {
   isOptionVisible.value = false;
 };
 const selectOption = (i) => {
-  emit("select", i);
+  emit("selected", i);
   isOptionVisible.value = false;
 };
 const toggleDropdown = () => {
@@ -137,6 +137,7 @@ const toggleDropdown = () => {
   }
   &__wrapper {
     overflow-y: auto;
+    max-height: 170px;
   }
   &__items {
     position: absolute;

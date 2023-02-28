@@ -13,6 +13,7 @@
               v-if="isLogo"
               class="header__logo-link"
               href="https://sibdev.pro/"
+              target="_blank"
             >
               <img
                 class="header__logo-img"
