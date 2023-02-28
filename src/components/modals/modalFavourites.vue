@@ -56,8 +56,8 @@ import { ref, computed, watch } from "vue";
 import { useStore } from "vuex";
 import { getRandomId } from "../../utils/idGenerator";
 import { setLocalStorage, editSavedData } from "../../api/localStorageParser";
-const store = useStore();
 
+const store = useStore();
 const emit = defineEmits(["save", "update"]);
 const props = defineProps({
   modelValue: {
@@ -84,13 +84,14 @@ const options = ref([
   { label: "По просмотрам", value: "viewCount" },
 ]);
 
-//getters
+// getters
 const isModalShow = computed(() => store.getters.getShowModalStatus);
 const savedData = computed(() => store.getters.getModalData);
 
-//action
+// action
 const setModalShow = (value) => store.dispatch("showModal", value);
 
+// computed
 const getCurrentValue = computed(() => {
   return props.modelValue;
 });
@@ -115,6 +116,7 @@ const checkReadonly = computed(() => {
   }
 });
 
+// повесил вотчер на открытие модалки и в зависимости от того где используем модалку изменяем передаваемые данные в модалку
 watch(
   () => isModalShow.value,
   () => {
@@ -134,6 +136,7 @@ watch(
   }
 );
 
+// methods
 const saveRequest = () => {
   const payload = {};
   if (props.isEdit) {

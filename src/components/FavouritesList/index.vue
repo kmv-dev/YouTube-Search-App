@@ -8,7 +8,7 @@
         class="favourite-list__item item"
         :key="item.requestId"
       >
-        <div class="item__inner" @click="testRoute">
+        <div class="item__inner" @click="redirectToSearch(item)">
           <span class="item__title">{{ item.requestName }}</span>
         </div>
         <div class="item__action">
@@ -29,9 +29,11 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 import { removeSavedRequest } from "../../api/localStorageParser";
 import modalFavourites from "../modals/modalFavourites.vue";
 
+const router = useRouter();
 const store = useStore();
 const currentRequest = ref(0);
 
@@ -43,28 +45,24 @@ const props = defineProps({
   },
 });
 
+// actions
 const setStateModalData = (payload) =>
   store.dispatch("addModalDataToState", payload);
 
+const setStateRequestData = (payload, isClick) =>
+  store.dispatch("setSavedRequestParams", { payload, isClick });
+
+const setSearchState = (searchStatus, searchValue) =>
+  store.dispatch("addSearchState", { searchStatus, searchValue });
+
+const setModalShow = (value) => store.dispatch("showModal", value);
+
+// computed
 const getSavedValue = computed(() => {
   return props.savedRequests[currentRequest.value];
 });
 
-const setModalShow = (value) => store.dispatch("showModal", value);
-
-const testRoute = () => {
-  console.log("redirect");
-};
-
-const deleteRequest = (id) => {
-  removeSavedRequest("saveRequests", id);
-  updateData();
-};
-
-const updateData = () => {
-  emit("update");
-};
-
+// methods
 const showModal = async (index) => {
   currentRequest.value = index;
   const payload = {
@@ -78,6 +76,21 @@ const showModal = async (index) => {
   setModalShow(true);
   document.body.style.overflow = "hidden";
 };
+
+const redirectToSearch = async (item) => {
+  await setSearchState(true, item.searchValue);
+  await setStateRequestData(item, true);
+  router.push("/");
+};
+
+const deleteRequest = (id) => {
+  removeSavedRequest("saveRequests", id);
+  updateData();
+};
+
+const updateData = () => {
+  emit("update");
+};
 </script>
 
 <style lang="scss" scoped>
@@ -88,16 +101,13 @@ const showModal = async (index) => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 20px 0 0;
     background: #ffffff;
     border-bottom: 1px solid #f1f1f1;
     transition: 0.3s ease-in-out;
     overflow: hidden;
     &:hover {
       background: rgba(197, 228, 249, 0.3);
-    }
-    &:hover .item__button {
-      display: block;
-      transform: translateX(-20px);
     }
     &:first-child {
       border-top-left-radius: 10px;
@@ -125,15 +135,18 @@ const showModal = async (index) => {
       background-size: 20px 20px;
       background-repeat: no-repeat;
       background-position: center;
-      transform: translateX(150px);
       transition: 0.2s ease-in-out;
+      &:hover {
+        opacity: 1;
+      }
       &_edit {
         background-image: url("../../assets/img/edit.svg");
-        opacity: 0.7;
+        opacity: 0.3;
       }
       &_delete {
         background-image: url("../../assets/img/delete.svg");
         margin-left: 10px;
+        opacity: 0.3;
       }
     }
   }

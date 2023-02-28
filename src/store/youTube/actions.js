@@ -2,11 +2,11 @@ import axios from "axios";
 const apiKey = "AIzaSyD1mHzBUhjdur7bswl9H7B4TiexmGsFE3o";
 
 export default {
-  async getYouTubeVideos({ commit }, { maxResults, search }) {
+  async getYouTubeVideos({ commit }, { maxResults, search, sort }) {
     try {
       await axios
         .get(
-          `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&type=video&part=snippet&maxResults=${maxResults}&q=${search}`
+          `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&type=video&part=snippet&order=${sort}&maxResults=${maxResults}&q=${search}`
         )
         .then(async function (response) {
           const results = await Promise.all(
@@ -23,6 +23,17 @@ export default {
         });
     } catch (e) {
       console.log(e);
+      commit("setErrorRequest", e.response.status);
     }
+  },
+
+  // дополнительно добавил состояние клика isClick чтобы определять на странице поиска перешел ли юзер с сохраненного item или с навигации
+  setSavedRequestParams({ commit }, { payload, isClick }) {
+    commit("setSavedParams", { payload, isClick });
+  },
+
+  //сброс состояния клика если мы переходим не кликая по сохраненному запросу на странице избранное, а переходим с навигации
+  resetStateIsClick({ commit }, reset) {
+    commit("setResetStateIsClick", reset);
   },
 };

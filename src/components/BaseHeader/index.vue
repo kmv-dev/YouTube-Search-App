@@ -36,10 +36,11 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+
+const store = useStore();
 const router = useRouter();
-
 const tabIndex = ref(0);
-
 const links = [
   {
     title: "Поиск",
@@ -62,6 +63,10 @@ onMounted(() => {
   isCheckActiveTab();
 });
 
+// actions сброс состояния клика после переходов из сохраненных запросов
+const resetStateRedirectFromFavouritesPage = (reset) =>
+  store.dispatch("resetStateIsClick", reset);
+
 const currentLinkBorderPosition = computed(() => {
   return `left: ${tabIndex.value * 50}%;`;
 });
@@ -74,6 +79,7 @@ const isCheckActiveTab = () => {
 
 const setTabIndex = (index) => {
   tabIndex.value = index;
+  resetStateRedirectFromFavouritesPage(false);
 };
 const logOut = () => {
   localStorage.removeItem("jwtToken");

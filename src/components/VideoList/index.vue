@@ -2,18 +2,25 @@
   <div class="videos">
     <div class="videos__header header">
       <div class="header__info info">
-        <span class="info__text"
-          >Видео по запросу «<span class="info__text info__text_bold">{{
-            searchRequest
-          }}</span
-          >»</span
-        >
-        <span class="info__text info__text_count"
-          >{{
-            videos.totalVideos >= 1000000 ? "больше 1 млн" : videos.totalVideos
-          }}
-          результатов</span
-        >
+        <span v-if="getErrorCode" class="info__tetx">{{
+          getMessageError
+        }}</span>
+        <div v-else>
+          <span class="info__text"
+            >Видео по запросу «<span class="info__text info__text_bold">{{
+              searchRequest
+            }}</span
+            >»</span
+          >
+          <span class="info__text info__text_count"
+            >{{
+              videos.totalVideos >= 1000000
+                ? "больше 1 млн"
+                : videos.totalVideos
+            }}
+            результатов</span
+          >
+        </div>
       </div>
       <div class="header__action">
         <span
@@ -66,7 +73,8 @@
 
 <script setup>
 import { ref, computed } from "vue";
-
+import { useStore } from "vuex";
+const store = useStore();
 const modeVisible = ref(1);
 
 const props = defineProps({
@@ -78,6 +86,18 @@ const props = defineProps({
     type: String,
     default: "",
   },
+});
+
+const getErrorCode = computed(() => store.getters.getErrorCodeStatus);
+
+const getMessageError = computed(() => {
+  if (getErrorCode.value === 403) {
+    return "Вы привысили количество запросов к Api YouTube";
+  } else if (getErrorCode.value === 400) {
+    return "Ошибка в параметрах запроса к Api YouTube";
+  } else {
+    return `Ошибка ${getErrorCode.value}`;
+  }
 });
 
 const itemsGridPosition = computed(() => {

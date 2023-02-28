@@ -1,19 +1,13 @@
 <template>
-  <div class="footer">footer</div>
+  <div class="footer">2023 © Kireev Maxim</div>
 </template>
 
 <style lang="scss">
 .footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   height: 50px;
   border-top: 1px solid #d9dbe9;
   padding: 10px 0;
-  &__link {
-    text-decoration: none;
-    color: #7964e6;
-    font-size: 12px;
-  }
+  text-align: center;
+  font-size: 14px;
 }
 </style>

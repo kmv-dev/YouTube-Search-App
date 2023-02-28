@@ -81,18 +81,40 @@ const store = useStore();
 const iconSave = ref("icon-like");
 const loading = ref(false);
 const inputValue = ref("");
+const maxResult = ref(12);
+const sort = ref("relevance");
 const saveData = ref(null);
 const showIcon = ref(false);
+const options = ref([
+  { label: "Без сортировки", value: "relevance" },
+  { label: "По дате", value: "date" },
+  { label: "По рейтингу", value: "rating" },
+  { label: "В алфавитном порядке", value: "title" },
+  { label: "По просмотрам", value: "viewCount" },
+]);
 
 //getters
 const getSearchState = computed(() => store.getters.getSearchState);
+const getSavedRequest = computed(() => store.getters.getSavedData);
+const isSearchRequestFromFavourites = computed(
+  () => store.getters.getIsClickStatus
+);
 
 //actions
-const getYouTubeVideo = (maxResults, search) =>
-  store.dispatch("getYouTubeVideos", { maxResults, search });
+const getYouTubeVideo = (maxResults, search, sort) =>
+  store.dispatch("getYouTubeVideos", { maxResults, search, sort });
 const setSearchState = (searchStatus, searchValue) =>
   store.dispatch("addSearchState", { searchStatus, searchValue });
 const setModalShow = (value) => store.dispatch("showModal", value);
+
+onMounted(async () => {
+  // проверяем запрос из избранного и если да, то формируем соответсвующий запрос с сохраненными данными
+  if (isSearchRequestFromFavourites.value) {
+    await updateSearchParams();
+    await search();
+  }
+  checkAfterSaved();
+});
 
 watch(
   () => inputValue.value,
@@ -101,10 +123,6 @@ watch(
     checkSearchState();
   }
 );
-
-onMounted(() => {
-  updateAfterSaved();
-});
 
 // блокирую кнопку вызова модалки пока страница поиска не перешла в активное состояние
 const iconSaveClass = computed(() => {
@@ -142,7 +160,6 @@ const v = useVuelidate(rules, {
 });
 
 // methods
-
 const checkSearchState = () => {
   getSearchState.value.searchStatus
     ? (showIcon.value = true)
@@ -154,10 +171,9 @@ const search = async () => {
     const isFormCorrect = await v.value.$validate();
     if (isFormCorrect) {
       loading.value = true;
-      await getYouTubeVideo(12, inputValue.value);
+      await getYouTubeVideo(maxResult.value, inputValue.value, sort.value);
       await setSearchState(true, inputValue.value);
       loading.value = false;
-      checkSearchState();
     } else {
       console.log("форма не корректна");
       return;
@@ -167,8 +183,19 @@ const search = async () => {
   }
 };
 
+const updateSearchParams = async () => {
+  maxResult.value = await getSavedRequest.value.maxResult;
+  inputValue.value = await getSavedRequest.value.searchValue;
+  if (getSavedRequest.value.sortMethod === -1) {
+    sort.value = options.value[0].value;
+  } else {
+    options.value[getSavedRequest.value.sortMethod].value;
+  }
+};
+
 const updateAfterSaved = () => {
   saveData.value = JSON.parse(localStorage.getItem("saveRequests"));
+  inputValue.value = getSearchState.value.searchValue;
 };
 const checkAfterSaved = () => {
   updateAfterSaved();
@@ -176,12 +203,12 @@ const checkAfterSaved = () => {
 };
 
 const checkCurrentSearch = async () => {
-  // проверяем есть ли у нас поисковый запрос в сохраненных данных для конкретного юзера
-  // и отрисовываем соответствующую иконку с тултипом
+  // проверяем есть ли у нас поисковый запрос в сохраненных данных для конкретного юзера,
+  // если есть, то отрисовываем соответствующую иконку с тултипом
   if (saveData.value) {
     const saved = await saveData.value.filter(
       (el) =>
-        el.searchValue === inputValue.value &&
+        el.searchValue.toLowerCase() === inputValue.value.toLowerCase() &&
         el.email === localStorage.getItem("userEmail")
     );
     saved[0]
