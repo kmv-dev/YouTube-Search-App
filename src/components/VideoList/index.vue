@@ -99,7 +99,7 @@ const props = defineProps({
 
 onMounted(() => {
   window.addEventListener("resize", () => {
-    if (document.body.clientWidth <= 576) {
+    if (document.body.clientWidth <= 768) {
       modeVisible.value = 1;
       isMobile.value = true;
     }
@@ -191,7 +191,9 @@ const toggleModeVisible = () => {
       justify-content: flex-start;
       flex-wrap: wrap;
       &.videos__items .item {
-        display: flex;
+        display: grid;
+        grid-template-columns: 2fr 5fr;
+        padding-bottom: 90px;
       }
       &.videos__items .item__iframe {
         margin: 0 20px 20px 0;
@@ -247,10 +249,60 @@ const toggleModeVisible = () => {
       }
     }
   }
+  @include _1400 {
+    &__items {
+      &_list {
+        &.videos__items .item {
+          padding-bottom: 80px;
+        }
+      }
+    }
+  }
+  @include _1300 {
+    &__items {
+      &_list {
+        &.videos__items .item {
+          padding-bottom: 60px;
+        }
+      }
+    }
+  }
+  @include _1199 {
+    &__items {
+      &_list {
+        &.videos__items .item {
+          padding-bottom: 40px;
+        }
+      }
+    }
+  }
+  @include _1099 {
+    &__items {
+      &_list {
+        &.videos__items .item {
+          padding-bottom: 20px;
+        }
+      }
+    }
+  }
   @include _991 {
     &__items {
+      &_list {
+        &.videos__items .item {
+          grid-template-columns: 1fr 2fr;
+          padding-bottom: 0;
+        }
+      }
       &_grid {
         grid-template-columns: 1fr 1fr;
+      }
+    }
+  }
+  @include _767 {
+    .header {
+      &__action {
+        pointer-events: none;
+        opacity: 0;
       }
     }
   }
@@ -259,10 +311,6 @@ const toggleModeVisible = () => {
       align-items: flex-start;
     }
     .header {
-      &__action {
-        pointer-events: none;
-        opacity: 0;
-      }
       .info {
         &__text {
           font-size: 14px;
@@ -271,9 +319,6 @@ const toggleModeVisible = () => {
     }
     &__items {
       &_list {
-        &.videos__items .item {
-          flex-direction: column;
-        }
         &.videos__items .item__iframe {
           margin: 0 0 20px 0;
         }
