@@ -2,7 +2,7 @@
   <div class="videos">
     <div class="videos__header header">
       <div class="header__info info">
-        <span v-if="getErrorCode" class="info__tetx">{{
+        <span v-if="getErrorCode" class="info__text">{{
           getMessageError
         }}</span>
         <div v-else>
@@ -22,7 +22,7 @@
           >
         </div>
       </div>
-      <div class="header__action">
+      <div class="header__action" :class="{ disabled: isMobile }">
         <span
           class="header__button icon-list"
           :class="{ active: modeVisible === 0 }"
@@ -40,15 +40,21 @@
         v-for="video in videos"
         :key="video.id.videoId"
         class="videos__item item"
+        @click="playVideo(video.id.videoId)"
       >
         <div class="item__iframe">
+          <img
+            v-if="!isPlay || videoId !== video.id.videoId"
+            :src="video.snippet.thumbnails.medium.url"
+            alt="thumbnails"
+            title="кликните для подготовки видео"
+          />
           <iframe
-            width="250"
-            height="150"
-            :src="`https://www.youtube.com/embed/${video.id.videoId}`"
+            v-if="isPlay && videoId === video.id.videoId"
+            :src="`https://www.youtube.com/embed/${videoId}`"
             title="YouTube video player"
             frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allow="accelerometer; autoplay=1; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen
           ></iframe>
         </div>
@@ -72,10 +78,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
 const modeVisible = ref(1);
+const isPlay = ref(false);
+const videoId = ref(null);
+const isMobile = ref(false);
 
 const props = defineProps({
   videos: {
@@ -86,6 +95,19 @@ const props = defineProps({
     type: String,
     default: "",
   },
+});
+
+onMounted(() => {
+  window.addEventListener("resize", () => {
+    if (document.body.clientWidth <= 768) {
+      modeVisible.value = 1;
+      isMobile.value = true;
+    }
+  });
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", window);
 });
 
 const getErrorCode = computed(() => store.getters.getErrorCodeStatus);
@@ -108,6 +130,11 @@ const itemsGridPosition = computed(() => {
     },
   ];
 });
+
+const playVideo = (id) => {
+  videoId.value = id;
+  isPlay.value = true;
+};
 
 const ellipsisText = (text, maxLength) => {
   return text.length > maxLength && modeVisible.value !== 0
@@ -164,7 +191,9 @@ const toggleModeVisible = () => {
       justify-content: flex-start;
       flex-wrap: wrap;
       &.videos__items .item {
-        display: flex;
+        display: grid;
+        grid-template-columns: 2fr 5fr;
+        padding-bottom: 90px;
       }
       &.videos__items .item__iframe {
         margin: 0 20px 20px 0;
@@ -172,7 +201,7 @@ const toggleModeVisible = () => {
     }
     &_grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
       grid-gap: 20px;
       &.videos__items .item {
         flex-direction: column;
@@ -182,14 +211,24 @@ const toggleModeVisible = () => {
   }
   .item {
     &__iframe {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      max-width: 250px;
+      height: 0px;
+      padding-bottom: 56.2%;
+      position: relative;
       border: 1px solid #1390e5;
       border-radius: 10px;
       overflow: hidden;
       margin-bottom: 10px;
+      iframe {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+      }
+      img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        width: -webkit-fill-available;
+      }
     }
     &__info {
       display: flex;
@@ -207,6 +246,108 @@ const toggleModeVisible = () => {
       }
       &_description {
         margin-bottom: 0;
+      }
+    }
+  }
+  @include _1400 {
+    &__items {
+      &_list {
+        &.videos__items .item {
+          padding-bottom: 80px;
+        }
+      }
+    }
+  }
+  @include _1300 {
+    &__items {
+      &_list {
+        &.videos__items .item {
+          padding-bottom: 60px;
+        }
+      }
+    }
+  }
+  @include _1199 {
+    &__items {
+      &_list {
+        &.videos__items .item {
+          padding-bottom: 40px;
+        }
+      }
+    }
+  }
+  @include _1099 {
+    &__items {
+      &_list {
+        &.videos__items .item {
+          padding-bottom: 20px;
+        }
+      }
+    }
+  }
+  @include _991 {
+    &__items {
+      &_list {
+        &.videos__items .item {
+          grid-template-columns: 1fr 2fr;
+          padding-bottom: 0;
+        }
+      }
+      &_grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  }
+  @include _767 {
+    .header {
+      &__action {
+        pointer-events: none;
+        opacity: 0;
+      }
+    }
+  }
+  @include _575 {
+    &__header {
+      align-items: flex-start;
+    }
+    .header {
+      .info {
+        &__text {
+          font-size: 14px;
+        }
+      }
+    }
+    &__items {
+      &_list {
+        &.videos__items .item__iframe {
+          margin: 0 0 20px 0;
+        }
+      }
+      &_grid {
+        grid-template-columns: 1fr;
+        &.videos__items .item {
+          flex-direction: column;
+          flex-basis: min-content;
+        }
+      }
+      .item {
+        &__iframe {
+          max-width: 100%;
+          margin: 0 0 20px 0;
+        }
+        &__info {
+          overflow: hidden;
+        }
+        &__text {
+          max-width: 100%;
+        }
+      }
+    }
+  }
+  @include _380 {
+    &__items {
+      &_grid {
+        grid-template-columns: 1fr;
       }
     }
   }

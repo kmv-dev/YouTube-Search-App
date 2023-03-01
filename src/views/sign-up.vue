@@ -1,7 +1,7 @@
 <template>
   <ModalSucces
     :isShow="isValidate"
-    :title="'Успешная регистрация'"
+    :title="'Успешная регистрация!'"
   ></ModalSucces>
   <BaseModal :isShow="!isValidate" :title="'Регистрация'" isLogo
     ><template v-slot:body>
@@ -128,7 +128,7 @@ const userSignUp = async () => {
       setLocalStorage("users", payload);
       isValidate.value = true; // активация модалки при успешном прохождении валидации формы
       await new Promise((resolve) =>
-        setTimeout(() => resolve(console.log("registration is succes!")), 4000)
+        setTimeout(() => resolve(console.log("registration is succes!")), 3000)
       ); // эмитация задержки ответа от сервера статус ок 200
       toSignInPage(); // перенаправление
     } catch (e) {
@@ -169,6 +169,11 @@ const toSignInPage = () => {
     &_to-sign-up {
       margin-top: 15px;
       font-size: 16px;
+    }
+  }
+  @include _575 {
+    &__field {
+      min-width: 100%;
     }
   }
 }

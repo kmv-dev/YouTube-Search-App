@@ -15,7 +15,7 @@
         @input="updateValue"
       />
       <div class="base-field__slot">
-        <button>
+        <button type="button">
           <span
             v-if="isPassword"
             class="ui-kit__icon"

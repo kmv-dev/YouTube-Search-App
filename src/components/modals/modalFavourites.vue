@@ -1,5 +1,9 @@
 <template>
-  <BaseModal :title="'Сохранить запрос'" v-model:isShow="isModalShow" isShadow
+  <BaseModal
+    class="modal-favourites"
+    :title="'Сохранить запрос'"
+    v-model:isShow="isModalShow"
+    isShadow
     ><template v-slot:body>
       <form action="#" @submit.prevent="saveRequest" id="favourites">
         <BaseField
@@ -35,19 +39,20 @@
           ></BaseField>
         </div></form></template
     ><template v-slot:footer
-      ><BaseButton
-        class="modal-favourites__button"
-        :mode="'bordered'"
-        @click="modalHide"
-        :type="'button'"
-        >Не сохранять</BaseButton
-      ><BaseButton
-        class="modal-favourites__button"
-        form="favourites"
-        :type="'submit'"
-        :disabled="checkValidate"
-        :name="btnName"
-      ></BaseButton></template
+      ><div class="modal-favourites__action">
+        <BaseButton
+          class="modal-favourites__button"
+          :mode="'bordered'"
+          @click="modalHide"
+          :type="'button'"
+          >Не сохранять</BaseButton
+        ><BaseButton
+          class="modal-favourites__button"
+          form="favourites"
+          :type="'submit'"
+          :disabled="checkValidate"
+          :name="btnName"
+        ></BaseButton></div></template
   ></BaseModal>
 </template>
 
@@ -174,21 +179,44 @@ const modalHide = () => {
 </script>
 
 <style lang="scss" scoped>
-.modal-favourites__field {
-  min-width: 430px;
-  &_range {
-    max-width: 100px;
-    margin-left: 20px;
+.modal-favourites {
+  &__field {
+    min-width: 430px;
+    &_range {
+      max-width: 100px;
+      margin-left: 20px;
+    }
   }
-}
-.modal-favourites__range {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 30px 0 0;
-}
-.modal-favourites__button {
-  min-width: 210px;
-  margin: 0 6px;
+  &__range {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 30px 0 0;
+  }
+  &__button {
+    min-width: 210px;
+    margin: 0 6px;
+  }
+  &__action {
+    display: flex;
+  }
+  @include _575 {
+    &__field {
+      min-width: 100%;
+      &_range {
+        max-width: 70px;
+        min-width: 70px;
+        margin-left: 10px;
+      }
+    }
+    &__action {
+      flex-direction: column;
+      width: 100%;
+    }
+    &__button {
+      min-width: 100%;
+      margin: 0 0 10px 0;
+    }
+  }
 }
 </style>

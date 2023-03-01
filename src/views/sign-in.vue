@@ -141,5 +141,13 @@ const toHomePage = () => {
       font-size: 16px;
     }
   }
+  @include _575 {
+    &.base-modal {
+      position: relative;
+    }
+    &__field {
+      min-width: 100%;
+    }
+  }
 }
 </style>
