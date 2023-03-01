@@ -128,7 +128,7 @@ const userSignUp = async () => {
       setLocalStorage("users", payload);
       isValidate.value = true; // активация модалки при успешном прохождении валидации формы
       await new Promise((resolve) =>
-        setTimeout(() => resolve(console.log("registration is succes!")), 4000)
+        setTimeout(() => resolve(console.log("registration is succes!")), 3000)
       ); // эмитация задержки ответа от сервера статус ок 200
       toSignInPage(); // перенаправление
     } catch (e) {
