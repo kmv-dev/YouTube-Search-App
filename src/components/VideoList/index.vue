@@ -40,15 +40,23 @@
         v-for="video in videos"
         :key="video.id.videoId"
         class="videos__item item"
+        @click="playVideo(video.id.videoId)"
       >
         <div class="item__iframe">
+          <img
+            v-if="!isPlay || videoId !== video.id.videoId"
+            :src="video.snippet.thumbnails.medium.url"
+            alt="thumbnails"
+            title="кликните для подготовки видео"
+          />
           <iframe
+            v-if="isPlay && videoId === video.id.videoId"
             width="250"
             height="150"
-            :src="`https://www.youtube.com/embed/${video.id.videoId}`"
+            :src="`https://www.youtube.com/embed/${videoId}`"
             title="YouTube video player"
             frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allow="accelerometer; autoplay=1; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen
           ></iframe>
         </div>
@@ -76,6 +84,8 @@ import { ref, computed } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
 const modeVisible = ref(1);
+const isPlay = ref(false);
+const videoId = ref(null);
 
 const props = defineProps({
   videos: {
@@ -108,6 +118,11 @@ const itemsGridPosition = computed(() => {
     },
   ];
 });
+
+const playVideo = (id) => {
+  videoId.value = id;
+  isPlay.value = true;
+};
 
 const ellipsisText = (text, maxLength) => {
   return text.length > maxLength && modeVisible.value !== 0

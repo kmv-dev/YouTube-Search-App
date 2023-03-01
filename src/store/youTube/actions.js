@@ -23,7 +23,7 @@ export default {
         });
     } catch (e) {
       console.log(e);
-      // для вывода некоторых ошибок. Например когда превышены запросы к Api youtube
+      // для вывода некоторых ошибок. Например когда превышены запросы к Api youtube (quotes)
       commit("setErrorRequest", e.response.status);
     }
   },
