@@ -209,17 +209,22 @@ const toggleModeVisible = () => {
   }
   .item {
     &__iframe {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      height: 0px;
+      padding-bottom: 56.2%;
+      position: relative;
       border: 1px solid #1390e5;
       border-radius: 10px;
       overflow: hidden;
       margin-bottom: 10px;
       iframe {
         width: 100%;
+        height: 100%;
+        position: absolute;
       }
       img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
         width: -webkit-fill-available;
       }
     }
@@ -262,8 +267,8 @@ const toggleModeVisible = () => {
     }
     .header {
       &__action {
-        margin-left: 30px;
         pointer-events: none;
+        opacity: 0;
       }
       .info {
         &__text {
