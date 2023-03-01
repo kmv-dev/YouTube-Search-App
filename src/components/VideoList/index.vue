@@ -51,8 +51,6 @@
           />
           <iframe
             v-if="isPlay && videoId === video.id.videoId"
-            width="250"
-            height="150"
             :src="`https://www.youtube.com/embed/${videoId}`"
             title="YouTube video player"
             frameborder="0"
@@ -201,7 +199,7 @@ const toggleModeVisible = () => {
     }
     &_grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
       grid-gap: 20px;
       &.videos__items .item {
         flex-direction: column;
@@ -214,11 +212,16 @@ const toggleModeVisible = () => {
       display: flex;
       justify-content: center;
       align-items: center;
-      max-width: 250px;
       border: 1px solid #1390e5;
       border-radius: 10px;
       overflow: hidden;
       margin-bottom: 10px;
+      iframe {
+        width: 100%;
+      }
+      img {
+        width: -webkit-fill-available;
+      }
     }
     &__info {
       display: flex;
@@ -249,7 +252,7 @@ const toggleModeVisible = () => {
   @include _991 {
     &__items {
       &_grid {
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
       }
     }
   }
@@ -278,7 +281,7 @@ const toggleModeVisible = () => {
         }
       }
       &_grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         &.videos__items .item {
           flex-direction: column;
           flex-basis: min-content;
