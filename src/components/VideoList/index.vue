@@ -107,7 +107,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize");
+  window.removeEventListener("resize", window);
 });
 
 const getErrorCode = computed(() => store.getters.getErrorCodeStatus);
