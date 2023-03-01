@@ -105,7 +105,6 @@ onMounted(() => {
       modeVisible.value = 1;
       isMobile.value = true;
     }
-    console.log(document.body.clientWidth);
   });
 });
 
