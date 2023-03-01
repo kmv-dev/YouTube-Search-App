@@ -131,5 +131,12 @@ const btnClass = computed(() => {
   &_is-loading {
     pointer-events: none;
   }
+  @include _575 {
+    font-size: 18px;
+  }
+  @include _380 {
+    font-size: 16px;
+    padding: 10px 15px;
+  }
 }
 </style>

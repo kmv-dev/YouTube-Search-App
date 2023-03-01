@@ -165,5 +165,17 @@ const logOut = () => {
       margin-right: 20px;
     }
   }
+  @include _575 {
+    &__button {
+      font-size: 14px !important;
+      padding: 0;
+    }
+    .nav-bar {
+      &__item {
+        padding: 15px 0;
+        font-size: 12px;
+      }
+    }
+  }
 }
 </style>

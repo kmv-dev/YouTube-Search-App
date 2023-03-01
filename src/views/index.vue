@@ -40,8 +40,8 @@ const activeClass = computed(() => {
     @include container;
   }
   &__title {
-    margin-left: 40%;
-    margin-top: 20%;
+    margin-left: calc(50% - 120px);
+    margin-top: 18%;
     font-weight: 400;
     font-size: 36px;
     color: #000000;
@@ -50,6 +50,15 @@ const activeClass = computed(() => {
     &.active {
       margin: 40px 0 20px;
       font-size: 28px;
+    }
+  }
+  @include _575 {
+    &__title {
+      margin-top: 30%;
+      &.active {
+        margin: 20px 0 10px;
+        font-size: 20px;
+      }
     }
   }
 }

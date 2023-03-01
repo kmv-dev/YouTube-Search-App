@@ -2,7 +2,7 @@
   <div class="videos">
     <div class="videos__header header">
       <div class="header__info info">
-        <span v-if="getErrorCode" class="info__tetx">{{
+        <span v-if="getErrorCode" class="info__text">{{
           getMessageError
         }}</span>
         <div v-else>
@@ -22,7 +22,7 @@
           >
         </div>
       </div>
-      <div class="header__action">
+      <div class="header__action" :class="{ disabled: isMobile }">
         <span
           class="header__button icon-list"
           :class="{ active: modeVisible === 0 }"
@@ -80,12 +80,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
 const modeVisible = ref(1);
 const isPlay = ref(false);
 const videoId = ref(null);
+const isMobile = ref(false);
 
 const props = defineProps({
   videos: {
@@ -96,6 +97,16 @@ const props = defineProps({
     type: String,
     default: "",
   },
+});
+
+onMounted(() => {
+  window.addEventListener("resize", (event) => {
+    if (document.body.clientWidth <= 576) {
+      modeVisible.value = 1;
+      isMobile.value = true;
+    }
+    console.log(document.body.clientWidth);
+  });
 });
 
 const getErrorCode = computed(() => store.getters.getErrorCodeStatus);
@@ -222,6 +233,72 @@ const toggleModeVisible = () => {
       }
       &_description {
         margin-bottom: 0;
+      }
+    }
+  }
+  @include _1300 {
+    &__items {
+      &_grid {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+      }
+    }
+  }
+  @include _991 {
+    &__items {
+      &_grid {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+  }
+  @include _575 {
+    &__header {
+      align-items: flex-start;
+    }
+    .header {
+      &__action {
+        margin-left: 30px;
+        pointer-events: none;
+      }
+      .info {
+        &__text {
+          font-size: 14px;
+        }
+      }
+    }
+    &__items {
+      &_list {
+        &.videos__items .item {
+          flex-direction: column;
+        }
+        &.videos__items .item__iframe {
+          margin: 0 0 20px 0;
+        }
+      }
+      &_grid {
+        grid-template-columns: 1fr 1fr;
+        &.videos__items .item {
+          flex-direction: column;
+          flex-basis: min-content;
+        }
+      }
+      .item {
+        &__iframe {
+          max-width: 100%;
+          margin: 0 0 20px 0;
+        }
+        &__info {
+          overflow: hidden;
+        }
+        &__text {
+          max-width: 100%;
+        }
+      }
+    }
+  }
+  @include _380 {
+    &__items {
+      &_grid {
+        grid-template-columns: 1fr;
       }
     }
   }

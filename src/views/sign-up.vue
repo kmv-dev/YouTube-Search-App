@@ -1,7 +1,7 @@
 <template>
   <ModalSucces
     :isShow="isValidate"
-    :title="'Успешная регистрация'"
+    :title="'Успешная регистрация!'"
   ></ModalSucces>
   <BaseModal :isShow="!isValidate" :title="'Регистрация'" isLogo
     ><template v-slot:body>
@@ -169,6 +169,11 @@ const toSignInPage = () => {
     &_to-sign-up {
       margin-top: 15px;
       font-size: 16px;
+    }
+  }
+  @include _575 {
+    &__field {
+      min-width: 100%;
     }
   }
 }

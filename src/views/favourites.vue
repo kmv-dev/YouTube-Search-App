@@ -42,5 +42,11 @@ const updateList = () => {
     font-size: 28px;
     margin: 40px 0;
   }
+  @include _575 {
+    &__title {
+      margin: 20px 0 10px;
+      font-size: 20px;
+    }
+  }
 }
 </style>

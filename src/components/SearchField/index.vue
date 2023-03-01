@@ -46,6 +46,7 @@
             </div>
           </Transition>
           <BaseButton
+            class="search__button"
             type="submit"
             form="searchForm"
             isSearch
@@ -174,6 +175,7 @@ const search = async () => {
       await getYouTubeVideo(maxResult.value, inputValue.value, sort.value);
       await setSearchState(true, inputValue.value);
       loading.value = false;
+      checkSearchState();
     } else {
       console.log("форма не корректна");
       return;
@@ -343,11 +345,69 @@ const toFavouritesPage = () => {
     color: #fff;
     padding: 2px 10px;
   }
-  @include _380 {
-    font-size: 14px;
-    &__control {
+  @include _767 {
+    width: 100%;
+    &.active {
+      margin-bottom: 20px;
+    }
+    &__button {
+      min-width: 100px;
+    }
+    &__tooltip {
+      right: 0;
+      :before,
+      :after {
+        left: 84px;
+      }
+    }
+  }
+  @include _575 {
+    font-size: 16px;
+    &.active {
+      margin-bottom: 20px;
+    }
+    &__tooltip {
+      padding: 8px;
+      right: 60px;
+      bottom: -86px;
       font-size: 14px;
-      height: 44px;
+      max-width: 170px;
+      :before,
+      :after {
+        left: 92px;
+      }
+      .tooltip {
+        &__btn {
+          font-size: 14px;
+        }
+      }
+    }
+    &__save-icon {
+      font-size: 20px;
+      &_disabled {
+        height: 20px;
+        width: 20px;
+      }
+    }
+  }
+  @include _380 {
+    &__control {
+      height: 46px;
+    }
+    &__button {
+      padding: 10px 15px;
+    }
+    &__tooltip {
+      bottom: -86px;
+      :before,
+      :after {
+        left: 94px;
+      }
+      .tooltip {
+        &__btn {
+          padding: 0;
+        }
+      }
     }
   }
 }

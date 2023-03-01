@@ -121,9 +121,12 @@ const updateData = () => {
       padding: 12px 20px;
       cursor: pointer;
       width: 100%;
+      overflow: hidden;
+      margin-right: 20px;
     }
     &__title {
       font-weight: 500;
+      max-width: 320px;
     }
     &__action {
       display: flex;
@@ -147,6 +150,22 @@ const updateData = () => {
         background-image: url("../../assets/img/delete.svg");
         margin-left: 10px;
         opacity: 0.3;
+      }
+    }
+  }
+  @include _575 {
+    .item {
+      &__title {
+        font-size: 12px;
+      }
+      padding: 0 10px 0 0;
+      &__inner {
+        padding: 6px 10px;
+      }
+      &__button {
+        height: 15px;
+        width: 15px;
+        background-size: 15px 15px;
       }
     }
   }
