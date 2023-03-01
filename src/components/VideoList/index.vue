@@ -80,7 +80,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
 const modeVisible = ref(1);
@@ -107,6 +107,10 @@ onMounted(() => {
     }
     console.log(document.body.clientWidth);
   });
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize");
 });
 
 const getErrorCode = computed(() => store.getters.getErrorCodeStatus);
