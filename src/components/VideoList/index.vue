@@ -247,13 +247,6 @@ const toggleModeVisible = () => {
       }
     }
   }
-  @include _1300 {
-    &__items {
-      &_grid {
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-      }
-    }
-  }
   @include _991 {
     &__items {
       &_grid {
