@@ -100,7 +100,7 @@ const props = defineProps({
 });
 
 onMounted(() => {
-  window.addEventListener("resize", (event) => {
+  window.addEventListener("resize", () => {
     if (document.body.clientWidth <= 576) {
       modeVisible.value = 1;
       isMobile.value = true;
