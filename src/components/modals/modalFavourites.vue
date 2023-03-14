@@ -29,14 +29,17 @@
           :label="'Сортировать по'"
           @selected="isSelected"
         />
-        <div class="modal-favourites__range">
-          <BaseRange v-model="rangeValue" :max="50" :min="1" />
-          <BaseField
-            v-model:value="rangeValue"
-            class="modal-favourites__field_range"
-            isTextCenter
-            isReadonly
-          ></BaseField>
+        <div class="modal-favourites__range range">
+          <label>Максимальное количество</label>
+          <div class="range__inner">
+            <BaseRange v-model="rangeValue" :max="50" :min="1" />
+            <BaseField
+              v-model:value="rangeValue"
+              class="modal-favourites__field_range"
+              isTextCenter
+              isReadonly
+            ></BaseField>
+          </div>
         </div></form></template
     ><template v-slot:footer
       ><div class="modal-favourites__action">
@@ -189,9 +192,15 @@ const modalHide = () => {
   }
   &__range {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
     margin: 30px 0 0;
+  }
+  .range {
+    &__inner {
+      display: flex;
+      align-items: center;
+    }
   }
   &__button {
     min-width: 210px;
